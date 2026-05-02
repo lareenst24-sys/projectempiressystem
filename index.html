@@ -1,1400 +1,233 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AstraKit — Personal Business Board</title>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AllInOne - Multi Business Canvas</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
     :root {
-      --bg: #05050a;
-      --bg-2: #0b0716;
-      --panel: rgba(15, 12, 28, 0.9);
-      --panel-solid: #11101d;
-      --card: rgba(19, 18, 34, 0.94);
-      --card-2: rgba(24, 20, 43, 0.94);
-      --border: rgba(124, 58, 237, 0.24);
-      --border-strong: rgba(124, 58, 237, 0.58);
-      --text: #ffffff;
-      --muted: #a7a3c6;
-      --muted-2: #6f6b8b;
-      --purple: #7c3aed;
-      --purple-soft: #a855f7;
-      --blue: #2f7dff;
-      --gold: #f5b82e;
-      --green: #22c55e;
-      --red: #ef4444;
-      --shadow: rgba(124, 58, 237, 0.28);
-      --radius: 18px;
+      --bg0: #07050f;
+      --bg1: #100820;
+      --bg2: #160e2e;
+      --purple: #7F77DD;
+      --gold: #C4A84A;
+      --blue: #378ADD;
+      --white: #ffffff;
+      --muted: #6a6a8a;
     }
 
-    body.light {
-      --bg: #f7f7fb;
-      --bg-2: #ffffff;
-      --panel: rgba(255, 255, 255, 0.92);
-      --panel-solid: #ffffff;
-      --card: rgba(255, 255, 255, 0.96);
-      --card-2: rgba(248, 247, 255, 0.96);
-      --border: rgba(124, 58, 237, 0.18);
-      --border-strong: rgba(124, 58, 237, 0.44);
-      --text: #11111a;
-      --muted: #5f5b75;
-      --muted-2: #89859f;
-      --shadow: rgba(124, 58, 237, 0.14);
-    }
-
-    html,
-    body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at 15% 0%, rgba(124, 58, 237, 0.22), transparent 32%),
-        radial-gradient(circle at 85% 8%, rgba(47, 125, 255, 0.14), transparent 34%),
-        radial-gradient(circle at 50% 100%, rgba(245, 184, 46, 0.07), transparent 34%),
-        var(--bg);
-      color: var(--text);
-    }
-
-    button,
-    input,
-    textarea {
-      font-family: inherit;
-    }
-
-    button {
-      border: 0;
-      cursor: pointer;
-    }
-
-    .app {
-      width: 100vw;
-      height: 100vh;
-      display: grid;
-      grid-template-rows: 58px 1fr;
-    }
-
-    /* TOP COMMAND BAR */
-    .command-bar {
-      position: relative;
-      z-index: 50;
-      height: 58px;
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      gap: 14px;
-      align-items: center;
-      padding: 0 14px;
-      background: rgba(8, 7, 17, 0.78);
-      border-bottom: 1px solid var(--border);
-      backdrop-filter: blur(18px);
-    }
-
-    body.light .command-bar {
-      background: rgba(255, 255, 255, 0.78);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-width: 175px;
-    }
-
-    .logo {
-      width: 34px;
-      height: 34px;
-      display: grid;
-      place-items: center;
-      border-radius: 12px;
-      background: linear-gradient(135deg, var(--purple), #35106c);
-      box-shadow: 0 0 28px var(--shadow);
-      font-size: 19px;
-      font-weight: 900;
-    }
-
-    .brand h1 {
-      font-size: 15px;
-      line-height: 1.1;
-    }
-
-    .brand p {
-      margin-top: 3px;
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    .function-strip {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      min-width: 0;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-
-    .function-strip::-webkit-scrollbar {
-      display: none;
-    }
-
-    .filter-btn,
-    .add-widget-btn,
-    .icon-btn,
-    .mode-btn {
-      height: 34px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      white-space: nowrap;
-      border-radius: 11px;
-      border: 1px solid var(--border);
-      background: rgba(255, 255, 255, 0.045);
-      color: var(--muted);
-      padding: 0 11px;
-      font-size: 12px;
-      font-weight: 700;
-      transition: 0.18s ease;
-    }
-
-    body.light .filter-btn,
-    body.light .add-widget-btn,
-    body.light .icon-btn,
-    body.light .mode-btn {
-      background: rgba(124, 58, 237, 0.045);
-    }
-
-    .filter-btn:hover,
-    .icon-btn:hover,
-    .mode-btn:hover {
-      color: var(--text);
-      border-color: var(--border-strong);
-      background: rgba(124, 58, 237, 0.12);
-    }
-
-    .filter-btn.active {
-      color: #ffffff;
-      border-color: var(--border-strong);
-      background: linear-gradient(135deg, rgba(124, 58, 237, 0.65), rgba(124, 58, 237, 0.22));
-      box-shadow: 0 0 24px rgba(124, 58, 237, 0.16);
-    }
-
-    .add-widget-btn {
-      color: var(--gold);
-      border-color: rgba(245, 184, 46, 0.42);
-      background: rgba(245, 184, 46, 0.1);
-    }
-
-    .add-widget-btn:hover {
-      background: rgba(245, 184, 46, 0.18);
-      border-color: var(--gold);
-    }
-
-    .right-controls {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .search-box {
-      width: 235px;
-      height: 34px;
-      border-radius: 11px;
-      border: 1px solid var(--border);
-      background: rgba(255, 255, 255, 0.045);
-      color: var(--text);
-      outline: none;
-      padding: 0 12px;
-      font-size: 12px;
-    }
-
-    .search-box:focus {
-      border-color: var(--border-strong);
-      box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.12);
-    }
-
-    .icon-btn {
-      width: 34px;
-      padding: 0;
-      font-size: 15px;
-      color: var(--text);
-    }
-
-    .avatar {
-      width: 34px;
-      height: 34px;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      border: 1px solid var(--border-strong);
-      background: rgba(124, 58, 237, 0.16);
-      color: var(--text);
-      font-size: 13px;
-      font-weight: 900;
-    }
-
-    /* MAIN */
-    .workspace {
-      min-height: 0;
-      display: grid;
-      grid-template-columns: 245px 1fr;
-    }
-
-    .sidebar {
-      position: relative;
-      z-index: 30;
-      background: rgba(9, 8, 19, 0.72);
-      border-right: 1px solid var(--border);
-      backdrop-filter: blur(20px);
-      padding: 16px;
-      overflow-y: auto;
-    }
-
-    body.light .sidebar {
-      background: rgba(255, 255, 255, 0.72);
-    }
-
-    .side-section {
-      margin-bottom: 18px;
-    }
-
-    .side-title {
-      margin-bottom: 9px;
-      color: var(--muted-2);
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-    }
-
-    .nav-item,
-    .business-item {
-      width: 100%;
-      min-height: 38px;
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      padding: 9px 10px;
-      border-radius: 12px;
-      color: var(--muted);
-      background: transparent;
-      font-size: 13px;
-      font-weight: 700;
-      transition: 0.16s ease;
-      border: 1px solid transparent;
-    }
-
-    .nav-item:hover,
-    .business-item:hover,
-    .nav-item.active,
-    .business-item.active {
-      color: var(--text);
-      background: rgba(124, 58, 237, 0.14);
-      border-color: var(--border);
-    }
-
-    .business-pill {
-      width: 25px;
-      height: 25px;
-      display: grid;
-      place-items: center;
-      border-radius: 9px;
-      color: white;
-      font-size: 12px;
-      font-weight: 900;
-      flex: 0 0 auto;
-    }
-
-    .business-meta {
-      min-width: 0;
-      text-align: left;
-    }
-
-    .business-meta strong {
-      display: block;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      font-size: 12px;
-    }
-
-    .business-meta span {
-      display: block;
-      margin-top: 2px;
-      color: var(--muted-2);
-      font-size: 10px;
-    }
-
-    .quick-panel {
-      margin-top: 14px;
-      padding: 14px;
-      border-radius: 16px;
-      border: 1px solid rgba(245, 184, 46, 0.24);
-      background: rgba(245, 184, 46, 0.07);
-    }
-
-    .quick-panel h3 {
-      color: var(--gold);
-      font-size: 13px;
-      margin-bottom: 10px;
-    }
-
-    .quick-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      margin-top: 8px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .quick-row b {
-      color: var(--text);
-    }
-
-    /* CANVAS */
-    .canvas-wrap {
-      position: relative;
-      overflow: hidden;
-      background-image:
-        radial-gradient(circle, rgba(124, 58, 237, 0.22) 1px, transparent 1px);
-      background-size: 28px 28px;
-    }
-
-    body.light .canvas-wrap {
-      background-image: radial-gradient(circle, rgba(124, 58, 237, 0.18) 1px, transparent 1px);
-    }
-
-    .canvas {
-      position: absolute;
-      inset: 0;
-      transform-origin: 0 0;
-    }
-
-    .canvas-empty {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: min(540px, calc(100vw - 60px));
-      padding: 26px;
-      border-radius: 26px;
-      border: 1px solid var(--border);
-      background: var(--panel);
-      backdrop-filter: blur(18px);
-      text-align: center;
-      box-shadow: 0 20px 80px rgba(0, 0, 0, 0.26);
-    }
-
-    .canvas-empty h2 {
-      font-size: 30px;
-      margin-bottom: 8px;
-    }
-
-    .canvas-empty p {
-      color: var(--muted);
-      line-height: 1.55;
-      font-size: 14px;
-    }
-
-    .canvas-empty b {
-      color: var(--purple-soft);
-    }
-
-    .board-card {
-      position: absolute;
-      width: 285px;
-      min-height: 150px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      background: var(--card);
-      backdrop-filter: blur(18px);
-      box-shadow: 0 16px 60px rgba(0, 0, 0, 0.3);
-      overflow: hidden;
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%; height: 100%; overflow: hidden;
+      background: var(--bg0);
+      font-family: 'Syne', sans-serif;
+      color: var(--white);
       user-select: none;
     }
 
-    .board-card:hover {
-      border-color: var(--border-strong);
-    }
-
-    .board-card.dragging {
-      z-index: 1000 !important;
-      border-color: var(--purple-soft);
-      box-shadow: 0 24px 90px rgba(0, 0, 0, 0.48), 0 0 0 4px rgba(124, 58, 237, 0.12);
-    }
-
-    .card-head {
-      height: 50px;
+    /* Command Bar */
+    #command-bar {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: 56px;
+      background: rgba(16,8,32,0.95);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(127,119,221,0.2);
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 10px 12px;
-      border-bottom: 1px solid var(--border);
-      background: rgba(255, 255, 255, 0.035);
-      cursor: grab;
+      padding: 0 16px;
+      gap: 12px;
+      z-index: 1000;
     }
 
-    .card-head:active {
-      cursor: grabbing;
-    }
-
-    .card-icon {
-      width: 30px;
-      height: 30px;
-      display: grid;
-      place-items: center;
-      border-radius: 10px;
-      color: white;
-      font-size: 15px;
-      box-shadow: 0 0 24px rgba(124, 58, 237, 0.16);
-      flex: 0 0 auto;
-    }
-
-    .card-title-wrap {
-      min-width: 0;
-      flex: 1;
-    }
-
-    .card-title {
-      display: block;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      color: var(--text);
-      font-size: 13px;
-      font-weight: 900;
-    }
-
-    .card-subtitle {
-      margin-top: 2px;
-      color: var(--muted-2);
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .delete-card {
-      width: 25px;
-      height: 25px;
-      display: grid;
-      place-items: center;
-      border-radius: 9px;
-      color: #ffb4b4;
-      border: 1px solid rgba(239, 68, 68, 0.22);
-      background: rgba(239, 68, 68, 0.1);
-      opacity: 0;
-      transition: 0.16s ease;
-    }
-
-    .board-card:hover .delete-card {
-      opacity: 1;
-    }
-
-    .card-body {
-      padding: 13px;
-    }
-
-    .metric-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 9px;
-    }
-
-    .metric {
-      padding: 11px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      background: rgba(255, 255, 255, 0.035);
-    }
-
-    .metric span {
-      display: block;
-      color: var(--muted);
-      font-size: 11px;
-    }
-
-    .metric b {
-      display: block;
-      margin-top: 6px;
-      font-size: 20px;
-    }
-
-    .metric small {
-      display: block;
-      margin-top: 5px;
-      color: var(--green);
-      font-size: 10px;
-    }
-
-    .list-row {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      min-height: 35px;
-      border-bottom: 1px solid rgba(124, 58, 237, 0.12);
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .list-row:last-child {
-      border-bottom: 0;
-    }
-
-    .list-row b {
-      color: var(--text);
+    .logo {
+      font-size: 26px;
       font-weight: 800;
+      background: linear-gradient(90deg, var(--purple), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
-    .row-dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      background: var(--purple);
-      flex: 0 0 auto;
-    }
-
-    .row-right {
-      margin-left: auto;
-      color: var(--muted-2);
-      font-size: 11px;
-    }
-
-    .note-textarea {
-      width: 100%;
-      min-height: 105px;
-      resize: vertical;
-      outline: none;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      background: rgba(255, 255, 255, 0.035);
-      color: var(--text);
-      padding: 12px;
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    .task-row {
+    #add-fn-wrap {
+      background: rgba(196,168,74,0.1);
+      border: 1px solid var(--gold);
+      padding: 8px 16px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       gap: 8px;
-      min-height: 33px;
-      border-bottom: 1px solid rgba(124, 58, 237, 0.12);
-      font-size: 12px;
-      color: var(--muted);
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--gold);
     }
 
-    .task-row:last-child {
-      border-bottom: 0;
-    }
+    #add-fn-wrap:hover { background: rgba(196,168,74,0.25); }
 
-    .checkbox {
-      width: 16px;
-      height: 16px;
-      display: grid;
-      place-items: center;
-      border-radius: 5px;
-      border: 1px solid var(--border-strong);
-      color: transparent;
-      flex: 0 0 auto;
-    }
-
-    .task-row.done .checkbox {
-      color: white;
-      background: var(--purple);
-    }
-
-    .task-row.done .task-label {
-      opacity: 0.55;
-      text-decoration: line-through;
-    }
-
-    .task-input {
-      width: 100%;
-      margin-top: 10px;
-      height: 34px;
-      outline: none;
-      border: 1px solid var(--border);
-      background: rgba(255, 255, 255, 0.035);
-      color: var(--text);
-      border-radius: 12px;
-      padding: 0 10px;
-      font-size: 12px;
-    }
-
-    .bar-row {
-      margin-bottom: 12px;
-    }
-
-    .bar-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 5px;
-      color: var(--muted);
-      font-size: 11px;
-    }
-
-    .track {
-      height: 6px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.08);
+    .main-canvas {
+      position: fixed;
+      top: 56px; left: 0; right: 0; bottom: 0;
+      background: 
+        radial-gradient(circle at 50% 50%, rgba(127,119,221,0.08) 0%, transparent 60%),
+        var(--bg0);
       overflow: hidden;
     }
 
-    .fill {
-      height: 100%;
-      border-radius: 999px;
+    #canvas {
+      position: absolute;
+      width: 100%; height: 100%;
+      background-image: 
+        radial-gradient(circle, rgba(127,119,221,0.25) 1px, transparent 1px);
+      background-size: 28px 28px;
+      transform-origin: 0 0;
     }
 
-    .tag-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 7px;
-    }
-
-    .tag {
-      padding: 6px 9px;
-      border-radius: 999px;
-      background: rgba(124, 58, 237, 0.12);
-      border: 1px solid var(--border);
-      color: var(--muted);
-      font-size: 11px;
-      font-weight: 800;
-    }
-
-    /* ADD PANEL */
-    .add-panel {
-      position: fixed;
-      top: 66px;
-      left: 50%;
-      transform: translateX(-50%) translateY(-8px);
-      z-index: 100;
-      width: min(560px, calc(100vw - 24px));
-      border-radius: 22px;
-      border: 1px solid rgba(245, 184, 46, 0.34);
-      background: var(--panel);
-      backdrop-filter: blur(22px);
-      box-shadow: 0 24px 90px rgba(0, 0, 0, 0.45);
-      padding: 14px;
-      opacity: 0;
-      pointer-events: none;
-      transition: 0.18s ease;
-    }
-
-    .add-panel.open {
-      opacity: 1;
-      pointer-events: auto;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    .add-panel-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-
-    .add-panel h2 {
-      color: var(--gold);
-      font-size: 13px;
-      letter-spacing: 0.09em;
-      text-transform: uppercase;
-    }
-
-    .add-panel p {
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .widget-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 9px;
-    }
-
-    .widget-option {
-      min-height: 92px;
-      padding: 12px 8px;
+    .card {
+      position: absolute;
+      background: var(--bg1);
+      border: 1px solid rgba(127,119,221,0.3);
       border-radius: 16px;
-      border: 1px solid var(--border);
-      background: rgba(255, 255, 255, 0.04);
-      color: var(--text);
-      text-align: center;
-      transition: 0.16s ease;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      min-width: 240px;
+      overflow: hidden;
+      cursor: move;
     }
 
-    .widget-option:hover {
-      transform: translateY(-2px);
-      border-color: var(--border-strong);
-      background: rgba(124, 58, 237, 0.12);
+    .card-header {
+      padding: 12px 16px;
+      background: var(--bg2);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid rgba(127,119,221,0.2);
     }
 
-    .widget-option .emoji {
-      display: block;
-      font-size: 24px;
-      margin-bottom: 8px;
-    }
-
-    .widget-option strong {
-      display: block;
-      font-size: 12px;
-    }
-
-    .widget-option span:last-child {
-      display: block;
-      margin-top: 4px;
-      color: var(--muted);
-      font-size: 10px;
-    }
-
-    .mobile-bottom {
-      display: none;
-    }
-
-    @media (max-width: 980px) {
-      .app {
-        grid-template-rows: 100px 1fr 62px;
-      }
-
-      .command-bar {
-        height: 100px;
-        grid-template-columns: 1fr auto;
-        grid-template-rows: auto auto;
-        align-items: center;
-      }
-
-      .brand {
-        min-width: 0;
-      }
-
-      .function-strip {
-        grid-column: 1 / -1;
-        order: 3;
-      }
-
-      .right-controls {
-        justify-content: flex-end;
-      }
-
-      .search-box {
-        display: none;
-      }
-
-      .workspace {
-        grid-template-columns: 1fr;
-      }
-
-      .sidebar {
-        display: none;
-      }
-
-      .widget-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .mobile-bottom {
-        position: relative;
-        z-index: 60;
-        height: 62px;
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        background: rgba(8, 7, 17, 0.9);
-        border-top: 1px solid var(--border);
-        backdrop-filter: blur(18px);
-      }
-
-      body.light .mobile-bottom {
-        background: rgba(255, 255, 255, 0.9);
-      }
-
-      .mobile-bottom button {
-        color: var(--muted);
-        background: transparent;
-        font-size: 11px;
-        font-weight: 800;
-      }
-
-      .mobile-bottom b {
-        display: block;
-        margin-bottom: 3px;
-        color: var(--purple-soft);
-        font-size: 18px;
-      }
+    .card-body {
+      padding: 14px;
+      font-size: 13px;
+      line-height: 1.5;
     }
   </style>
 </head>
 <body>
-  <div class="app">
-    <header class="command-bar">
-      <div class="brand">
-        <div class="logo">✦</div>
-        <div>
-          <h1>AstraKit</h1>
-          <p>Business + personal board</p>
-        </div>
-      </div>
 
-      <nav class="function-strip" aria-label="Function filters">
-        <button class="filter-btn active" data-filter="all">⊞ All View</button>
-        <button class="filter-btn" data-filter="business">🏢 Business</button>
-        <button class="filter-btn" data-filter="finance">💰 Finance</button>
-        <button class="filter-btn" data-filter="tasks">✅ Tasks</button>
-        <button class="filter-btn" data-filter="notes">📝 Notes</button>
-        <button class="filter-btn" data-filter="personal">⚡ Personal</button>
-        <button class="add-widget-btn" id="openAddPanel">＋ Add Function</button>
-      </nav>
+  <!-- Command Bar -->
+  <div id="command-bar">
+    <div class="logo">AllInOne</div>
 
-      <div class="right-controls">
-        <input class="search-box" id="searchInput" placeholder="Search cards, businesses, notes..." />
-        <button class="icon-btn" id="themeBtn" title="Toggle light/dark">☾</button>
-        <button class="icon-btn" id="resetBtn" title="Reset demo layout">↺</button>
-        <div class="avatar">J</div>
-      </div>
-    </header>
+    <div id="add-fn-wrap" onclick="addNewFeature()">
+      <span style="font-size:22px">+</span>
+      <span>Add Function / Widget</span>
+    </div>
 
-    <section class="workspace">
-      <aside class="sidebar">
-        <div class="side-section">
-          <div class="side-title">Main Spaces</div>
-          <button class="nav-item active" data-filter-short="all">⊞ All View</button>
-          <button class="nav-item" data-filter-short="business">🏢 Business Hub</button>
-          <button class="nav-item" data-filter-short="personal">⚡ Personal Space</button>
-          <button class="nav-item" data-filter-short="tasks">✅ Tasks</button>
-          <button class="nav-item" data-filter-short="notes">📝 Notes</button>
-        </div>
-
-        <div class="side-section">
-          <div class="side-title">Business Switcher</div>
-          <button class="business-item active">
-            <span class="business-pill" style="background: var(--purple);">E</span>
-            <span class="business-meta"><strong>Elvyr</strong><span>Clothing brand</span></span>
-          </button>
-          <button class="business-item">
-            <span class="business-pill" style="background: var(--blue);">P</span>
-            <span class="business-meta"><strong>Plimal</strong><span>E-commerce</span></span>
-          </button>
-          <button class="business-item">
-            <span class="business-pill" style="background: var(--purple-soft);">E</span>
-            <span class="business-meta"><strong>Eanova</strong><span>SaaS platform</span></span>
-          </button>
-          <button class="business-item">
-            <span class="business-pill" style="background: var(--gold); color:#0b0716;">+</span>
-            <span class="business-meta"><strong>Add Business</strong><span>Unlimited boards</span></span>
-          </button>
-        </div>
-
-        <div class="quick-panel">
-          <h3>Today at a glance</h3>
-          <div class="quick-row"><span>Active businesses</span><b id="activeBusinesses">3</b></div>
-          <div class="quick-row"><span>Open tasks</span><b id="openTasks">9</b></div>
-          <div class="quick-row"><span>Notes</span><b id="noteCount">4</b></div>
-          <div class="quick-row"><span>Revenue today</span><b>$1,240</b></div>
-        </div>
-      </aside>
-
-      <main class="canvas-wrap" id="canvasWrap">
-        <div class="canvas" id="canvas">
-          <div class="canvas-empty" id="emptyState">
-            <h2>Your board is empty</h2>
-            <p>Use <b>Add Function</b> at the top to add Business, Finance, Tasks, Notes, Habits, Calendar, Links, and more.</p>
-          </div>
-        </div>
-      </main>
-    </section>
-
-    <nav class="mobile-bottom">
-      <button data-mobile-filter="all"><b>⌂</b>Home</button>
-      <button data-mobile-filter="business"><b>🏢</b>Business</button>
-      <button id="mobileAdd"><b>＋</b>Add</button>
-      <button data-mobile-filter="personal"><b>⚡</b>Personal</button>
-      <button data-mobile-filter="tasks"><b>✅</b>Tasks</button>
-    </nav>
+    <div style="margin-left:auto; display:flex; gap:12px; align-items:center;">
+      <button onclick="setMode('biz')" style="padding:8px 16px; background:var(--purple); border:none; border-radius:10px; color:white;">Business Mode</button>
+      <button onclick="setMode('personal')" style="padding:8px 16px; background:var(--bg2); border:none; border-radius:10px;">Personal Mode</button>
+    </div>
   </div>
 
-  <section class="add-panel" id="addPanel" aria-label="Add function panel">
-    <div class="add-panel-head">
-      <div>
-        <h2>Add Function</h2>
-        <p>Pick a widget. Later each one can become a full feature page.</p>
+  <!-- Canvas -->
+  <div class="main-canvas" id="canvas-wrap">
+    <div id="canvas"></div>
+  </div>
+
+<script>
+// Basic state
+let cardCounter = 0;
+
+// Add new card
+function addNewFeature() {
+  const name = prompt("Enter feature name (e.g. Invoice System, Client CRM, Daily Journal):");
+  if (!name) return;
+
+  const canvas = document.getElementById('canvas');
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.style.left = (200 + Math.random() * 400) + 'px';
+  card.style.top = (100 + Math.random() * 300) + 'px';
+  card.style.zIndex = ++cardCounter;
+
+  card.innerHTML = `
+    <div class="card-header">
+      <strong>${name}</strong>
+      <span style="margin-left:auto; cursor:pointer; color:#e74c3c;" onclick="this.parentElement.parentElement.remove()">✕</span>
+    </div>
+    <div class="card-body">
+      <textarea style="width:100%; height:120px; background:transparent; border:none; color:white; resize:none; outline:none;" placeholder="Write notes, plans, tasks..."></textarea>
+      <div style="margin-top:12px; font-size:11px; color:var(--muted);">
+        Drag to move • Right click for options
       </div>
-      <button class="icon-btn" id="closeAddPanel">×</button>
     </div>
+  `;
 
-    <div class="widget-grid">
-      <button class="widget-option" data-widget="business"><span class="emoji">🏢</span><strong>Business</strong><span>Revenue + tasks</span></button>
-      <button class="widget-option" data-widget="finance"><span class="emoji">💰</span><strong>Finance</strong><span>Income + expense</span></button>
-      <button class="widget-option" data-widget="tasks"><span class="emoji">✅</span><strong>Tasks</strong><span>To-do board</span></button>
-      <button class="widget-option" data-widget="notes"><span class="emoji">📝</span><strong>Notes</strong><span>Quick writing</span></button>
-      <button class="widget-option" data-widget="personal"><span class="emoji">⚡</span><strong>Habits</strong><span>Personal life</span></button>
-      <button class="widget-option" data-widget="calendar"><span class="emoji">📅</span><strong>Calendar</strong><span>Schedule view</span></button>
-      <button class="widget-option" data-widget="links"><span class="emoji">🔗</span><strong>Links</strong><span>Important URLs</span></button>
-      <button class="widget-option" data-widget="idea"><span class="emoji">💡</span><strong>Ideas</strong><span>Brain dump</span></button>
-    </div>
-  </section>
+  // Make draggable
+  makeDraggable(card);
+  canvas.appendChild(card);
+}
 
-  <script>
-    const canvas = document.getElementById("canvas");
-    const emptyState = document.getElementById("emptyState");
-    const addPanel = document.getElementById("addPanel");
-    const openAddPanel = document.getElementById("openAddPanel");
-    const closeAddPanel = document.getElementById("closeAddPanel");
-    const mobileAdd = document.getElementById("mobileAdd");
-    const themeBtn = document.getElementById("themeBtn");
-    const resetBtn = document.getElementById("resetBtn");
-    const searchInput = document.getElementById("searchInput");
+// Simple drag functionality
+function makeDraggable(el) {
+  let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 
-    let cards = JSON.parse(localStorage.getItem("astrakit_v2_cards")) || [];
-    let activeFilter = "all";
-    let draggingCardId = null;
-    let dragOffsetX = 0;
-    let dragOffsetY = 0;
-    let zIndexCounter = Number(localStorage.getItem("astrakit_v2_z")) || 20;
+  el.querySelector('.card-header').onmousedown = dragMouseDown;
 
-    const widgetTemplates = {
-      business: {
-        type: "business",
-        icon: "🏢",
-        title: "Business Overview",
-        subtitle: "Business Hub",
-        color: "var(--purple)",
-        width: 330,
-        html: `
-          <div class="list-row"><span class="business-pill" style="background:var(--purple);">E</span><b>Elvyr</b><span class="row-right">$7,540 ↑</span></div>
-          <div class="list-row"><span class="business-pill" style="background:var(--blue);">P</span><b>Plimal</b><span class="row-right">$5,320 ↑</span></div>
-          <div class="list-row"><span class="business-pill" style="background:var(--purple-soft);">E</span><b>Eanova</b><span class="row-right">$3,890 ↑</span></div>
-          <div class="list-row"><span class="business-pill" style="background:var(--gold);color:#111;">+</span><b>Add another</b><span class="row-right">unlimited</span></div>
-        `
-      },
-      finance: {
-        type: "finance",
-        icon: "💰",
-        title: "Finance Tracker",
-        subtitle: "Income + expenses",
-        color: "var(--gold)",
-        width: 320,
-        html: `
-          <div class="bar-row"><div class="bar-top"><span>Revenue</span><b style="color:var(--green);">$18,745</b></div><div class="track"><div class="fill" style="width:78%;background:var(--green);"></div></div></div>
-          <div class="bar-row"><div class="bar-top"><span>Expenses</span><b style="color:var(--red);">$3,210</b></div><div class="track"><div class="fill" style="width:32%;background:var(--red);"></div></div></div>
-          <div class="bar-row"><div class="bar-top"><span>Profit</span><b style="color:var(--gold);">$15,535</b></div><div class="track"><div class="fill" style="width:67%;background:var(--gold);"></div></div></div>
-          <div class="tag-row"><span class="tag">Elvyr</span><span class="tag">This month</span><span class="tag">Manual data</span></div>
-        `
-      },
-      tasks: {
-        type: "tasks",
-        icon: "✅",
-        title: "Task List",
-        subtitle: "Daily execution",
-        color: "var(--blue)",
-        width: 310,
-        html: `
-          <div class="task-list">
-            <div class="task-row"><span class="checkbox">✓</span><span class="task-label">Review website redesign</span><span class="row-right" style="color:var(--red);">High</span></div>
-            <div class="task-row"><span class="checkbox">✓</span><span class="task-label">Process refund requests</span><span class="row-right" style="color:var(--gold);">Medium</span></div>
-            <div class="task-row"><span class="checkbox">✓</span><span class="task-label">Update onboarding flow</span><span class="row-right" style="color:var(--gold);">Medium</span></div>
-          </div>
-          <input class="task-input" placeholder="Add task and press Enter..." />
-        `
-      },
-      notes: {
-        type: "notes",
-        icon: "📝",
-        title: "Quick Note",
-        subtitle: "Notes",
-        color: "var(--purple-soft)",
-        width: 305,
-        html: `<textarea class="note-textarea" placeholder="Write notes, ideas, reminders, links..."></textarea>`
-      },
-      personal: {
-        type: "personal",
-        icon: "⚡",
-        title: "Personal Habits",
-        subtitle: "Personal Space",
-        color: "var(--purple)",
-        width: 300,
-        html: `
-          <div class="list-row"><span class="row-dot" style="background:var(--green);"></span><b>Workout</b><span class="row-right">7 day streak</span></div>
-          <div class="list-row"><span class="row-dot" style="background:var(--gold);"></span><b>Journal</b><span class="row-right">Tonight</span></div>
-          <div class="list-row"><span class="row-dot" style="background:var(--blue);"></span><b>Study</b><span class="row-right">45 min</span></div>
-          <div class="list-row"><span class="row-dot" style="background:var(--purple-soft);"></span><b>Health</b><span class="row-right">Track</span></div>
-        `
-      },
-      calendar: {
-        type: "personal",
-        icon: "📅",
-        title: "Calendar",
-        subtitle: "Schedule",
-        color: "var(--blue)",
-        width: 315,
-        html: `
-          <div class="list-row"><span class="row-dot" style="background:var(--purple);"></span><b>Elvyr strategy call</b><span class="row-right">10:00</span></div>
-          <div class="list-row"><span class="row-dot" style="background:var(--blue);"></span><b>Product review</b><span class="row-right">1:00</span></div>
-          <div class="list-row"><span class="row-dot" style="background:var(--gold);"></span><b>Personal review</b><span class="row-right">8:30</span></div>
-        `
-      },
-      links: {
-        type: "business",
-        icon: "🔗",
-        title: "Important Links",
-        subtitle: "Shortcuts",
-        color: "var(--purple)",
-        width: 300,
-        html: `
-          <div class="list-row"><span class="row-dot" style="background:var(--purple);"></span><b>Elvyr Store</b><span class="row-right">Open</span></div>
-          <div class="list-row"><span class="row-dot" style="background:var(--blue);"></span><b>GitHub Repo</b><span class="row-right">Open</span></div>
-          <div class="list-row"><span class="row-dot" style="background:var(--gold);"></span><b>Supabase</b><span class="row-right">Open</span></div>
-        `
-      },
-      idea: {
-        type: "notes",
-        icon: "💡",
-        title: "Idea Board",
-        subtitle: "Brain dump",
-        color: "var(--gold)",
-        width: 310,
-        html: `<textarea class="note-textarea" placeholder="Drop future app features here..."></textarea>`
-      }
-    };
+  function dragMouseDown(e) {
+    if (e.target.tagName === "TEXTAREA") return;
+    e.preventDefault();
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    document.onmousemove = elementDrag;
+  }
 
-    function saveCards() {
-      localStorage.setItem("astrakit_v2_cards", JSON.stringify(cards));
-      localStorage.setItem("astrakit_v2_z", String(zIndexCounter));
-      updateCounts();
-    }
+  function elementDrag(e) {
+    e.preventDefault();
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    el.style.top = (el.offsetTop - pos2) + "px";
+    el.style.left = (el.offsetLeft - pos1) + "px";
+  }
 
-    function updateCounts() {
-      const businessCards = cards.filter(card => card.type === "business").length;
-      const taskCards = cards.filter(card => card.type === "tasks").length;
-      const noteCards = cards.filter(card => card.type === "notes").length;
-      document.getElementById("activeBusinesses").textContent = Math.max(3, businessCards);
-      document.getElementById("openTasks").textContent = Math.max(9, taskCards * 3);
-      document.getElementById("noteCount").textContent = Math.max(4, noteCards);
-    }
+  function closeDragElement() {
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
+}
 
-    function openPanel() {
-      addPanel.classList.add("open");
-    }
+function setMode(mode) {
+  alert(`Switched to ${mode === 'biz' ? 'Business' : 'Personal'} Mode\n\nYou can expand this later.`);
+}
 
-    function closePanel() {
-      addPanel.classList.remove("open");
-    }
-
-    function addWidget(widgetName) {
-      const template = widgetTemplates[widgetName];
-      if (!template) return;
-
-      const card = {
-        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
-        type: template.type,
-        icon: template.icon,
-        title: template.title,
-        subtitle: template.subtitle,
-        color: template.color,
-        width: template.width,
-        html: template.html,
-        x: 290 + Math.random() * 120,
-        y: 110 + Math.random() * 120,
-        z: ++zIndexCounter,
-        userText: ""
-      };
-
-      cards.push(card);
-      saveCards();
-      renderCards();
-      closePanel();
-    }
-
-    function deleteCard(id) {
-      cards = cards.filter(card => card.id !== id);
-      saveCards();
-      renderCards();
-    }
-
-    function setFilter(filter) {
-      activeFilter = filter;
-      document.querySelectorAll(".filter-btn").forEach(button => {
-        button.classList.toggle("active", button.dataset.filter === filter);
-      });
-      renderCards();
-    }
-
-    function renderCards() {
-      canvas.querySelectorAll(".board-card").forEach(card => card.remove());
-      const search = searchInput.value.trim().toLowerCase();
-      let visibleCount = 0;
-
-      cards.forEach(card => {
-        const matchesFilter = activeFilter === "all" || card.type === activeFilter;
-        const matchesSearch = !search || (card.title + " " + card.subtitle + " " + card.type).toLowerCase().includes(search);
-
-        if (!matchesFilter || !matchesSearch) return;
-        visibleCount++;
-
-        const element = document.createElement("section");
-        element.className = "board-card";
-        element.dataset.id = card.id;
-        element.dataset.type = card.type;
-        element.style.left = card.x + "px";
-        element.style.top = card.y + "px";
-        element.style.width = card.width + "px";
-        element.style.zIndex = card.z;
-
-        element.innerHTML = `
-          <div class="card-head">
-            <div class="card-icon" style="background:${card.color};">${card.icon}</div>
-            <div class="card-title-wrap">
-              <span class="card-title">${escapeHtml(card.title)}</span>
-              <span class="card-subtitle">${escapeHtml(card.subtitle)}</span>
-            </div>
-            <button class="delete-card" title="Delete">×</button>
-          </div>
-          <div class="card-body">${card.html}</div>
-        `;
-
-        const head = element.querySelector(".card-head");
-        const deleteBtn = element.querySelector(".delete-card");
-
-        head.addEventListener("mousedown", event => startDrag(event, element));
-        head.addEventListener("touchstart", event => startTouchDrag(event, element), { passive: false });
-        deleteBtn.addEventListener("click", () => deleteCard(card.id));
-
-        element.querySelectorAll(".note-textarea").forEach(textarea => {
-          textarea.value = card.userText || "";
-          textarea.addEventListener("input", () => {
-            const target = cards.find(item => item.id === card.id);
-            if (target) {
-              target.userText = textarea.value;
-              saveCards();
-            }
-          });
-        });
-
-        element.querySelectorAll(".task-row").forEach(row => {
-          row.addEventListener("click", () => row.classList.toggle("done"));
-        });
-
-        element.querySelectorAll(".task-input").forEach(input => {
-          input.addEventListener("keydown", event => {
-            if (event.key !== "Enter") return;
-            const value = input.value.trim();
-            if (!value) return;
-            const taskList = element.querySelector(".task-list");
-            const row = document.createElement("div");
-            row.className = "task-row";
-            row.innerHTML = `<span class="checkbox">✓</span><span class="task-label">${escapeHtml(value)}</span><span class="row-right">New</span>`;
-            row.addEventListener("click", () => row.classList.toggle("done"));
-            taskList.appendChild(row);
-            input.value = "";
-          });
-        });
-
-        canvas.appendChild(element);
-      });
-
-      emptyState.style.display = cards.length === 0 || visibleCount === 0 ? "block" : "none";
-      if (cards.length > 0 && visibleCount === 0) {
-        emptyState.querySelector("h2").textContent = "No cards in this view";
-        emptyState.querySelector("p").innerHTML = "Switch back to <b>All View</b> or add a matching function.";
-      } else {
-        emptyState.querySelector("h2").textContent = "Your board is empty";
-        emptyState.querySelector("p").innerHTML = "Use <b>Add Function</b> at the top to add Business, Finance, Tasks, Notes, Habits, Calendar, Links, and more.";
-      }
-    }
-
-    function startDrag(event, element) {
-      draggingCardId = element.dataset.id;
-      element.classList.add("dragging");
-      const rect = element.getBoundingClientRect();
-      dragOffsetX = event.clientX - rect.left;
-      dragOffsetY = event.clientY - rect.top;
-
-      const target = cards.find(card => card.id === draggingCardId);
-      if (target) {
-        target.z = ++zIndexCounter;
-        element.style.zIndex = target.z;
-      }
-
-      document.addEventListener("mousemove", dragMove);
-      document.addEventListener("mouseup", stopDrag);
-    }
-
-    function dragMove(event) {
-      if (!draggingCardId) return;
-      const element = document.querySelector(`[data-id="${draggingCardId}"]`);
-      if (!element) return;
-
-      const workspaceRect = canvas.getBoundingClientRect();
-      const x = event.clientX - workspaceRect.left - dragOffsetX;
-      const y = event.clientY - workspaceRect.top - dragOffsetY;
-
-      element.style.left = x + "px";
-      element.style.top = y + "px";
-    }
-
-    function stopDrag() {
-      if (!draggingCardId) return;
-      const element = document.querySelector(`[data-id="${draggingCardId}"]`);
-      const target = cards.find(card => card.id === draggingCardId);
-
-      if (element && target) {
-        target.x = parseInt(element.style.left, 10);
-        target.y = parseInt(element.style.top, 10);
-        element.classList.remove("dragging");
-      }
-
-      draggingCardId = null;
-      saveCards();
-      document.removeEventListener("mousemove", dragMove);
-      document.removeEventListener("mouseup", stopDrag);
-    }
-
-    function startTouchDrag(event, element) {
-      event.preventDefault();
-      const touch = event.touches[0];
-      draggingCardId = element.dataset.id;
-      element.classList.add("dragging");
-      const rect = element.getBoundingClientRect();
-      dragOffsetX = touch.clientX - rect.left;
-      dragOffsetY = touch.clientY - rect.top;
-
-      document.addEventListener("touchmove", touchMove, { passive: false });
-      document.addEventListener("touchend", stopTouchDrag);
-    }
-
-    function touchMove(event) {
-      event.preventDefault();
-      if (!draggingCardId) return;
-      const touch = event.touches[0];
-      const element = document.querySelector(`[data-id="${draggingCardId}"]`);
-      if (!element) return;
-
-      const workspaceRect = canvas.getBoundingClientRect();
-      const x = touch.clientX - workspaceRect.left - dragOffsetX;
-      const y = touch.clientY - workspaceRect.top - dragOffsetY;
-
-      element.style.left = x + "px";
-      element.style.top = y + "px";
-    }
-
-    function stopTouchDrag() {
-      stopDrag();
-      document.removeEventListener("touchmove", touchMove);
-      document.removeEventListener("touchend", stopTouchDrag);
-    }
-
-    function toggleTheme() {
-      document.body.classList.toggle("light");
-      const isLight = document.body.classList.contains("light");
-      themeBtn.textContent = isLight ? "☀" : "☾";
-      localStorage.setItem("astrakit_v2_theme", isLight ? "light" : "dark");
-    }
-
-    function loadTheme() {
-      const theme = localStorage.getItem("astrakit_v2_theme");
-      if (theme === "light") {
-        document.body.classList.add("light");
-        themeBtn.textContent = "☀";
-      }
-    }
-
-    function resetDemoLayout() {
-      const ok = confirm("Reset to the starter layout? This clears current cards on this device.");
-      if (!ok) return;
-      localStorage.removeItem("astrakit_v2_cards");
-      cards = [];
-      createStarterLayout();
-    }
-
-    function createStarterLayout() {
-      if (cards.length > 0) {
-        renderCards();
-        return;
-      }
-
-      const starters = [
-        ["business", 290, 90],
-        ["finance", 650, 90],
-        ["tasks", 290, 330],
-        ["notes", 650, 330],
-        ["personal", 990, 90],
-        ["calendar", 990, 330]
-      ];
-
-      starters.forEach(([widgetName, x, y]) => {
-        const template = widgetTemplates[widgetName];
-        cards.push({
-          id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()),
-          type: template.type,
-          icon: template.icon,
-          title: template.title,
-          subtitle: template.subtitle,
-          color: template.color,
-          width: template.width,
-          html: template.html,
-          x,
-          y,
-          z: ++zIndexCounter,
-          userText: ""
-        });
-      });
-
-      saveCards();
-      renderCards();
-    }
-
-    function escapeHtml(text) {
-      return String(text)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    openAddPanel.addEventListener("click", openPanel);
-    closeAddPanel.addEventListener("click", closePanel);
-    mobileAdd.addEventListener("click", openPanel);
-    themeBtn.addEventListener("click", toggleTheme);
-    resetBtn.addEventListener("click", resetDemoLayout);
-    searchInput.addEventListener("input", renderCards);
-
-    document.querySelectorAll(".widget-option").forEach(button => {
-      button.addEventListener("click", () => addWidget(button.dataset.widget));
-    });
-
-    document.querySelectorAll(".filter-btn").forEach(button => {
-      button.addEventListener("click", () => setFilter(button.dataset.filter));
-    });
-
-    document.querySelectorAll("[data-filter-short]").forEach(button => {
-      button.addEventListener("click", () => {
-        document.querySelectorAll(".nav-item").forEach(item => item.classList.remove("active"));
-        button.classList.add("active");
-        setFilter(button.dataset.filterShort);
-      });
-    });
-
-    document.querySelectorAll("[data-mobile-filter]").forEach(button => {
-      button.addEventListener("click", () => setFilter(button.dataset.mobileFilter));
-    });
-
-    document.addEventListener("click", event => {
-      const clickedInsidePanel = event.target.closest("#addPanel");
-      const clickedAddButton = event.target.closest("#openAddPanel") || event.target.closest("#mobileAdd");
-      if (!clickedInsidePanel && !clickedAddButton) closePanel();
-    });
-
-    loadTheme();
-    createStarterLayout();
-    updateCounts();
-  </script>
+// Initialize with some starter cards
+window.onload = () => {
+  const starters = [
+    "Main Shop Dashboard", 
+    "Finance Overview", 
+    "Daily Tasks", 
+    "Personal Journal"
+  ];
+  
+  starters.forEach(title => {
+    const canvas = document.getElementById('canvas');
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.left = (150 + Math.random()*300) + 'px';
+    card.style.top = (80 + Math.random()*200) + 'px';
+    card.style.zIndex = ++cardCounter;
+    card.innerHTML = `
+      <div class="card-header">
+        <strong>${title}</strong>
+        <span style="margin-left:auto; cursor:pointer; color:#e74c3c;" onclick="this.parentElement.parentElement.remove()">✕</span>
+      </div>
+      <div class="card-body">
+        <p>Click + in top bar to add more widgets.</p>
+      </div>
+    `;
+    makeDraggable(card);
+    canvas.appendChild(card);
+  });
+};
+</script>
 </body>
 </html>
