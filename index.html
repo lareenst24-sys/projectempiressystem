@@ -1,51 +1,1071 @@
-<button class="fpill" data-f="finance">Finance</button>
-    <button class="fpill" data-f="tasks">Tasks</button>
-    <button class="fpill" data-f="notes">Notes</button>
-    <button class="fpill" data-f="habits">Habits</button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>XC4 — Command Canvas</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════════════
+   RESET & ROOT
+═══════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg0:#07050f;--bg1:#100820;--bg2:#160e2e;--bg3:#1c1240;--bg4:#221650;
+  --purple:#7F77DD;--purple-dim:#534AB7;--purple-light:#CECBF6;--purple-faint:rgba(127,119,221,0.1);
+  --gold:#C4A84A;--gold-bright:#E8C85A;--gold-dim:#8a7030;--gold-faint:rgba(196,168,74,0.1);
+  --blue:#378ADD;--blue-light:#85B7EB;--blue-faint:rgba(55,138,221,0.1);
+  --white:#ffffff;--off-white:#e8e4f0;--muted:#6a6a8a;--dimmer:#2e2e4e;
+  --border:rgba(127,119,221,0.16);--border-gold:rgba(196,168,74,0.22);--border-blue:rgba(55,138,221,0.2);
+  --green:#2ecc71;--red:#e74c3c;--orange:#f39c12;
+  --font-d:'Syne',sans-serif;--font-m:'DM Mono',monospace;
+  --radius-card:16px;--radius-btn:10px;
+  --shadow-card:0 12px 40px rgba(0,0,0,0.5);
+  --shadow-glow:0 0 30px rgba(127,119,221,0.2);
+  --topbar-h:52px;
+}
+body.light-mode{
+  --bg0:#f0eef8;--bg1:#ffffff;--bg2:#f5f3ff;--bg3:#ebe8ff;--bg4:#ddd8ff;
+  --white:#11111f;--off-white:#22223a;--muted:#6666aa;--dimmer:#c0bbdd;
+  --border:rgba(127,119,221,0.2);--border-gold:rgba(196,168,74,0.3);
+  --shadow-card:0 8px 32px rgba(127,119,221,0.12);
+}
+html,body{width:100%;height:100%;overflow:hidden;font-family:var(--font-d);color:var(--white);}
+button{border:none;cursor:pointer;font-family:var(--font-d);}
+input,textarea{font-family:var(--font-d);}
+
+/* ═══════════════════════════════════════════════
+   BACKGROUND MESH
+═══════════════════════════════════════════════ */
+body{
+  background:
+    radial-gradient(ellipse at 15% 20%, rgba(127,119,221,0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 80%, rgba(55,138,221,0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(196,168,74,0.04) 0%, transparent 60%),
+    var(--bg0);
+  transition:background 0.3s;
+}
+body.light-mode{
+  background:
+    radial-gradient(ellipse at 15% 20%, rgba(127,119,221,0.07) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 80%, rgba(55,138,221,0.05) 0%, transparent 50%),
+    var(--bg0);
+}
+
+/* ═══════════════════════════════════════════════
+   TOP COMMAND BAR
+═══════════════════════════════════════════════ */
+#topbar{
+  position:fixed;top:0;left:0;right:0;height:var(--topbar-h);
+  background:rgba(16,8,32,0.94);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;padding:0 12px;
+  z-index:1000;box-shadow:0 2px 20px rgba(0,0,0,0.4);
+  transition:background 0.3s;
+}
+body.light-mode #topbar{background:rgba(255,255,255,0.92);}
+
+/* Logo */
+.cb-logo{display:flex;align-items:center;gap:8px;padding-right:10px;border-right:1px solid var(--border);margin-right:4px;flex-shrink:0;}
+.logo-mark{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--purple),var(--purple-dim));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;letter-spacing:-0.5px;box-shadow:0 0 16px rgba(127,119,221,0.4);}
+.logo-text{font-size:16px;font-weight:800;color:var(--white);}
+.logo-text b{color:var(--gold);font-weight:800;}
+
+/* ADD FUNCTION BOX — key feature */
+#add-box{display:flex;align-items:center;gap:6px;background:var(--bg2);border:1px solid var(--border-gold);border-radius:12px;padding:5px 6px;flex-shrink:0;}
+#fn-input{background:transparent;border:none;outline:none;color:var(--white);font-size:12px;font-family:var(--font-d);width:200px;padding:0 6px;}
+#fn-input::placeholder{color:var(--muted);}
+#fn-input:focus{color:var(--white);}
+#add-submit{padding:6px 14px;border-radius:8px;background:var(--gold);color:var(--bg0);font-size:11px;font-weight:700;transition:all 0.15s;}
+#add-submit:hover{background:var(--gold-bright);transform:translateY(-1px);}
+
+/* WIDGET TYPE SELECTOR */
+#widget-type-select{background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:11px;font-family:var(--font-d);padding:6px 8px;outline:none;cursor:pointer;}
+#widget-type-select option{background:var(--bg1);}
+
+/* FUNCTION FILTER PILLS */
+#fn-filters{display:flex;align-items:center;gap:3px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:4px;flex-shrink:0;}
+.filter-pill{padding:4px 10px;border-radius:7px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;border:none;background:transparent;transition:all 0.15s;white-space:nowrap;}
+.filter-pill:hover{color:var(--white);background:var(--bg3);}
+.filter-pill.active{background:var(--purple-faint);color:var(--purple-light);border:1px solid rgba(127,119,221,0.3);}
+
+.cb-spacer{flex:1;}
+
+/* RIGHT CONTROLS */
+.cb-right{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.mode-toggle{display:flex;border-radius:8px;overflow:hidden;border:1px solid var(--border);}
+.mode-btn{padding:5px 10px;font-size:10px;font-weight:700;border:none;font-family:var(--font-d);cursor:pointer;transition:all 0.15s;color:var(--muted);background:var(--bg2);}
+.mode-btn.biz-active{background:var(--purple);color:#fff;}
+.mode-btn.per-active{background:var(--gold);color:var(--bg0);}
+.icon-btn{width:30px;height:30px;border-radius:8px;background:var(--bg2);border:1px solid var(--border);color:var(--muted);font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;}
+.icon-btn:hover{border-color:var(--purple);color:var(--white);}
+.icon-btn.active{background:var(--purple-faint);border-color:var(--purple);color:var(--purple-light);}
+.zoom-box{display:flex;align-items:center;gap:4px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:4px 8px;font-size:11px;color:var(--muted);font-family:var(--font-m);cursor:default;}
+.zoom-box span{cursor:pointer;padding:0 2px;transition:color 0.1s;}
+.zoom-box span:hover{color:var(--white);}
+.cb-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--purple-dim),var(--purple));border:1.5px solid var(--purple);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;}
+
+/* ═══════════════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════════════ */
+#sidebar{
+  position:fixed;top:var(--topbar-h);left:0;bottom:0;width:210px;
+  background:rgba(16,8,32,0.96);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;z-index:900;
+  transition:transform 0.25s ease,background 0.3s;overflow:hidden;
+}
+body.light-mode #sidebar{background:rgba(255,255,255,0.96);}
+#sidebar.collapsed{transform:translateX(-210px);}
+.sb-scroll{flex:1;overflow-y:auto;padding:10px 8px;scrollbar-width:thin;scrollbar-color:var(--dimmer) transparent;}
+.sb-group-label{font-size:9px;color:var(--dimmer);letter-spacing:0.08em;text-transform:uppercase;padding:8px 8px 4px;font-weight:700;}
+.sb-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:9px;cursor:pointer;margin-bottom:2px;transition:all 0.15s;border:1px solid transparent;}
+.sb-item:hover{background:var(--bg2);border-color:var(--border);}
+.sb-item.active{background:var(--purple-faint);border-color:rgba(127,119,221,0.3);}
+.sb-pip{width:18px;height:18px;border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;}
+.sb-label{font-size:12px;color:var(--muted);flex:1;transition:color 0.15s;}
+.sb-item:hover .sb-label,.sb-item.active .sb-label{color:var(--white);}
+.sb-item.active .sb-label{color:var(--purple-light);}
+.sb-badge{font-size:9px;padding:2px 6px;border-radius:8px;background:var(--bg3);color:var(--muted);font-family:var(--font-m);}
+.sb-divider{height:1px;background:var(--border);margin:8px 8px;}
+/* Business switcher */
+.biz-switcher{padding:10px 8px;border-top:1px solid var(--border);}
+.biz-sw-label{font-size:9px;color:var(--dimmer);letter-spacing:0.07em;text-transform:uppercase;margin-bottom:6px;padding:0 2px;font-weight:700;}
+.biz-sw-item{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:9px;cursor:pointer;margin-bottom:3px;transition:all 0.15s;border:1px solid transparent;}
+.biz-sw-item:hover,.biz-sw-item.active{background:var(--gold-faint);border-color:var(--border-gold);}
+.biz-sw-pip{width:20px;height:20px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;}
+.biz-sw-name{font-size:11px;color:var(--muted);flex:1;}
+.biz-sw-item.active .biz-sw-name{color:var(--gold);}
+.biz-sw-dot{width:6px;height:6px;border-radius:50%;}
+.biz-add-row{display:flex;align-items:center;gap:8px;padding:5px 8px;cursor:pointer;border-radius:9px;transition:all 0.15s;}
+.biz-add-row:hover{background:var(--bg2);}
+.biz-add-icon{width:20px;height:20px;border-radius:6px;border:1px dashed var(--dimmer);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--dimmer);}
+.biz-add-text{font-size:11px;color:var(--dimmer);}
+/* User row */
+.sb-user{display:flex;align-items:center;gap:8px;padding:10px 10px;border-top:1px solid var(--border);}
+.sb-user-avatar{width:26px;height:26px;border-radius:50%;background:var(--purple-dim);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--purple-light);}
+.sb-user-info .uname{font-size:11px;color:var(--muted);}
+.sb-user-info .urole{font-size:9px;color:var(--dimmer);}
+
+/* ═══════════════════════════════════════════════
+   CANVAS
+═══════════════════════════════════════════════ */
+#canvas-wrap{
+  position:fixed;top:var(--topbar-h);left:210px;right:0;bottom:0;
+  overflow:hidden;cursor:default;transition:left 0.25s;
+}
+#canvas-wrap.sidebar-hidden{left:0;}
+#canvas-wrap.panning{cursor:grabbing;}
+/* Dot grid */
+#canvas-wrap::before{
+  content:'';position:absolute;inset:-300%;
+  background-image:radial-gradient(circle,rgba(127,119,221,0.2) 1px,transparent 1px);
+  background-size:28px 28px;pointer-events:none;
+  transform:translate(var(--cx,0px),var(--cy,0px));
+  transition:none;
+}
+#canvas{position:absolute;top:0;left:0;width:100%;height:100%;transform-origin:0 0;}
+
+/* ═══════════════════════════════════════════════
+   CARDS
+═══════════════════════════════════════════════ */
+.card{
+  position:absolute;background:var(--bg1);border:1px solid var(--border);
+  border-radius:var(--radius-card);overflow:hidden;box-shadow:var(--shadow-card);
+  cursor:move;transition:box-shadow 0.2s,border-color 0.2s,opacity 0.2s;
+  min-width:200px;
+}
+.card:hover{border-color:rgba(127,119,221,0.4);box-shadow:0 16px 56px rgba(0,0,0,0.6),var(--shadow-glow);}
+.card.dragging{box-shadow:0 28px 72px rgba(0,0,0,0.8),0 0 40px rgba(127,119,221,0.3);z-index:800;border-color:var(--purple);}
+.card.dimmed{opacity:0.18;pointer-events:none;}
+.card-hdr{display:flex;align-items:center;gap:8px;padding:10px 12px 8px;border-bottom:1px solid var(--border);background:var(--bg2);cursor:move;}
+.hdr-pip{width:20px;height:20px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;}
+.hdr-title{font-size:12px;font-weight:700;color:var(--white);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hdr-type{font-size:9px;color:var(--muted);font-family:var(--font-m);padding:2px 6px;border-radius:5px;background:var(--bg3);margin-right:4px;}
+.hdr-close{width:16px;height:16px;border-radius:50%;background:rgba(231,76,60,0.15);border:1px solid rgba(231,76,60,0.35);color:var(--red);font-size:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity 0.15s;flex-shrink:0;}
+.card:hover .hdr-close{opacity:1;}
+.card-body{padding:12px 13px;}
+.resize-handle{position:absolute;bottom:4px;right:4px;width:14px;height:14px;cursor:se-resize;opacity:0;transition:opacity 0.15s;}
+.resize-handle::after{content:'';position:absolute;bottom:2px;right:2px;width:9px;height:9px;border-right:2px solid var(--purple);border-bottom:2px solid var(--purple);border-radius:1px;}
+.card:hover .resize-handle{opacity:0.6;}
+
+/* ═══════════════════════════════════════════════
+   CARD INNER STYLES
+═══════════════════════════════════════════════ */
+/* Stats */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.stat-item{text-align:center;}
+.stat-val{font-size:22px;font-weight:800;font-family:var(--font-m);}
+.stat-lbl{font-size:10px;color:var(--muted);margin-top:2px;}
+.stat-chg{font-size:10px;margin-top:4px;}
+/* Tasks */
+.task-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:0.5px solid var(--border);cursor:pointer;}
+.task-row:last-of-type{border:none;}
+.task-chk{width:15px;height:15px;border-radius:4px;border:1.5px solid var(--dimmer);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
+.task-chk.done{background:var(--purple);border-color:var(--purple);}
+.task-chk.done::after{content:'✓';font-size:9px;color:#fff;}
+.task-txt{font-size:11px;color:var(--off-white);flex:1;}
+.task-txt.done{color:var(--muted);text-decoration:line-through;}
+.task-tag{font-size:9px;padding:2px 6px;border-radius:5px;white-space:nowrap;}
+.task-input-row{margin-top:8px;padding-top:8px;border-top:0.5px solid var(--border);}
+.task-input-row input{width:100%;background:transparent;border:none;outline:none;color:var(--off-white);font-size:11px;font-family:var(--font-d);}
+.task-input-row input::placeholder{color:var(--muted);}
+/* Finance */
+.fin-row{margin-bottom:10px;}
+.fin-row:last-child{margin:0;}
+.fin-meta{display:flex;justify-content:space-between;margin-bottom:4px;}
+.fin-lbl{font-size:10px;color:var(--muted);}
+.fin-val{font-size:11px;font-weight:700;font-family:var(--font-m);}
+.fin-track{height:4px;background:var(--bg3);border-radius:2px;}
+.fin-fill{height:4px;border-radius:2px;transition:width 0.6s ease;}
+.fin-total-row{margin-top:10px;padding-top:8px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+/* Notes */
+.note-ta{width:100%;min-height:80px;background:transparent;border:none;outline:none;resize:none;color:var(--off-white);font-size:12px;line-height:1.6;font-family:var(--font-d);}
+.note-ta::placeholder{color:var(--muted);}
+.note-tags{display:flex;gap:5px;margin-top:8px;padding-top:8px;border-top:0.5px solid var(--border);flex-wrap:wrap;}
+.note-tag-pill{padding:3px 9px;border-radius:20px;font-size:9px;cursor:pointer;border:1px solid;transition:all 0.15s;}
+/* Habits */
+.habit-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:0.5px solid var(--border);}
+.habit-row:last-child{border:none;}
+.habit-pip{width:15px;height:15px;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;font-size:9px;color:#fff;border:1.5px solid var(--dimmer);background:transparent;}
+.habit-pip.done{border-color:transparent;}
+.habit-name{font-size:11px;color:var(--muted);flex:1;}
+.habit-streak{font-size:10px;font-family:var(--font-m);color:var(--gold);}
+.habit-prog-wrap{margin-top:10px;}
+.habit-prog-track{height:3px;background:var(--bg3);border-radius:2px;margin-top:5px;}
+.habit-prog-fill{height:3px;border-radius:2px;background:var(--purple);transition:width 0.4s;}
+.habit-meta{font-size:10px;color:var(--muted);margin-top:5px;}
+/* Business */
+.biz-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:0.5px solid var(--border);cursor:pointer;}
+.biz-row:last-child{border:none;}
+.biz-rw-pip{width:22px;height:22px;border-radius:7px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;}
+.biz-rw-name{font-size:12px;font-weight:600;color:var(--white);flex:1;}
+.biz-rw-rev{font-size:11px;font-family:var(--font-m);color:var(--gold);}
+.biz-rw-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.biz-total{margin-top:10px;padding-top:8px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+/* Clock */
+.clock-big{font-size:34px;font-weight:700;font-family:var(--font-m);text-align:center;color:var(--white);padding:8px 0;letter-spacing:-1px;}
+.clock-date{font-size:11px;color:var(--muted);text-align:center;margin-bottom:4px;}
+.clock-zones{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin-top:8px;}
+.clock-zone{padding:3px 10px;border-radius:6px;background:var(--blue-faint);border:1px solid var(--border-blue);font-size:10px;color:var(--blue-light);}
+/* Sticky */
+.sticky-ta{width:100%;min-height:110px;background:transparent;border:none;outline:none;resize:none;color:var(--off-white);font-size:12px;line-height:1.6;font-family:var(--font-d);}
+.sticky-ta::placeholder{color:rgba(196,168,74,0.4);}
+/* Custom */
+.custom-ta{width:100%;min-height:90px;background:transparent;border:none;outline:none;resize:none;color:var(--off-white);font-size:12px;line-height:1.6;font-family:var(--font-d);}
+.custom-ta::placeholder{color:var(--muted);}
+
+/* ═══════════════════════════════════════════════
+   EMPTY STATE
+═══════════════════════════════════════════════ */
+#empty-state{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  text-align:center;max-width:400px;pointer-events:none;
+}
+#empty-state h2{font-size:22px;font-weight:800;color:var(--white);margin-bottom:10px;}
+#empty-state p{font-size:13px;color:var(--muted);line-height:1.7;}
+#empty-state b{color:var(--gold);}
+#empty-state.hidden{display:none;}
+
+/* ═══════════════════════════════════════════════
+   FLOATING TOOLBAR
+═══════════════════════════════════════════════ */
+#float-bar{
+  position:fixed;bottom:18px;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:3px;
+  background:rgba(16,8,32,0.96);backdrop-filter:blur(20px);
+  border:1px solid var(--border);border-radius:16px;padding:5px 8px;
+  z-index:1000;box-shadow:0 8px 32px rgba(0,0,0,0.6);
+  transition:left 0.25s,transform 0.25s;
+}
+body.light-mode #float-bar{background:rgba(255,255,255,0.96);}
+.fb-btn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 9px;border-radius:10px;cursor:pointer;border:none;background:transparent;font-family:var(--font-d);transition:all 0.15s;}
+.fb-btn:hover{background:var(--bg2);}
+.fb-icon{font-size:15px;line-height:1;}
+.fb-lbl{font-size:9px;color:var(--muted);white-space:nowrap;}
+.fb-sep{width:1px;height:30px;background:var(--border);margin:0 2px;}
+
+/* ═══════════════════════════════════════════════
+   CONTEXT MENU
+═══════════════════════════════════════════════ */
+#ctx{
+  position:fixed;z-index:3000;background:var(--bg1);border:1px solid var(--border);
+  border-radius:12px;padding:6px;box-shadow:0 10px 40px rgba(0,0,0,0.7);display:none;min-width:165px;
+}
+body.light-mode #ctx{background:#fff;}
+#ctx.open{display:block;animation:ctxIn 0.14s ease;}
+@keyframes ctxIn{from{opacity:0;transform:scale(0.95);}to{opacity:1;transform:scale(1);}}
+.ctx-i{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:7px;font-size:12px;color:var(--muted);cursor:pointer;transition:all 0.1s;}
+.ctx-i:hover{background:var(--bg2);color:var(--white);}
+.ctx-i.danger:hover{background:rgba(231,76,60,0.1);color:var(--red);}
+.ctx-sep{height:1px;background:var(--border);margin:4px 0;}
+
+/* ═══════════════════════════════════════════════
+   STATUS BAR (bottom-left)
+═══════════════════════════════════════════════ */
+#statusbar{position:fixed;bottom:18px;left:220px;display:flex;gap:6px;z-index:100;font-family:var(--font-m);}
+#statusbar.sb-hidden{left:10px;}
+.status-chip{background:var(--bg1);border:1px solid var(--border);border-radius:6px;padding:3px 8px;font-size:10px;color:var(--muted);}
+
+/* ═══════════════════════════════════════════════
+   NOTIFICATIONS TOAST
+═══════════════════════════════════════════════ */
+#toast{position:fixed;top:62px;right:14px;z-index:5000;display:flex;flex-direction:column;gap:6px;pointer-events:none;}
+.toast-msg{background:var(--bg1);border:1px solid var(--border);border-radius:10px;padding:9px 14px;font-size:12px;color:var(--white);box-shadow:var(--shadow-card);animation:toastIn 0.2s ease;display:flex;align-items:center;gap:8px;}
+.toast-msg.success{border-color:rgba(46,204,113,0.4);}
+.toast-msg.error{border-color:rgba(231,76,60,0.4);}
+@keyframes toastIn{from{opacity:0;transform:translateX(20px);}to{opacity:1;transform:translateX(0);}}
+@keyframes toastOut{to{opacity:0;transform:translateX(20px);}}
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════ */
+@media(max-width:768px){
+  #sidebar{transform:translateX(-210px);}
+  #canvas-wrap{left:0;}
+  #statusbar{left:10px;}
+  #fn-input{width:130px;}
+  #fn-filters{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ TOP BAR ═══ -->
+<div id="topbar">
+  <div class="cb-logo">
+    <div class="logo-mark">XC4</div>
+    <div class="logo-text">XC<b>4</b></div>
   </div>
 
-  <div class="tb-spacer"></div>
+  <!-- ADD FUNCTION BOX -->
+  <div id="add-box" title="Type a name and press Add or Enter">
+    <select id="widget-type-select">
+      <option value="custom">✦ Custom</option>
+      <option value="business">🏢 Business</option>
+      <option value="finance">💰 Finance</option>
+      <option value="tasks">✅ Tasks</option>
+      <option value="notes">📝 Notes</option>
+      <option value="habits">⚡ Habits</option>
+      <option value="stats">📊 Stats</option>
+      <option value="clock">🕐 Clock</option>
+      <option value="sticky">📌 Sticky</option>
+    </select>
+    <input id="fn-input" type="text" placeholder="Name your widget & press Add…" maxlength="40"/>
+    <button id="add-submit">Add</button>
+  </div>
 
-  <div class="tb-right">
-    <div class="tb-mode">
-      <button class="mode-b biz" id="mbiz" onclick="setMode('biz')">Business</button>
-      <button class="mode-b" id="mper" onclick="setMode('per')">Personal</button>
+  <!-- FILTERS -->
+  <div id="fn-filters">
+    <button class="filter-pill active" data-filter="all">All</button>
+    <button class="filter-pill" data-filter="business">Biz</button>
+    <button class="filter-pill" data-filter="finance">Finance</button>
+    <button class="filter-pill" data-filter="tasks">Tasks</button>
+    <button class="filter-pill" data-filter="notes">Notes</button>
+    <button class="filter-pill" data-filter="habits">Habits</button>
+    <button class="filter-pill" data-filter="personal">Personal</button>
+  </div>
+
+  <div class="cb-spacer"></div>
+
+  <div class="cb-right">
+    <div class="mode-toggle">
+      <button class="mode-btn biz-active" id="biz-mode-btn" onclick="setMode('biz')">Business</button>
+      <button class="mode-btn" id="per-mode-btn" onclick="setMode('personal')">Personal</button>
     </div>
-    <div class="zoom-ctrl">
+    <div class="zoom-box">
       <span onclick="zoom(-0.1)">−</span>
-      <b id="zlbl">100%</b>
+      <span id="zoom-lbl" style="pointer-events:none;min-width:34px;text-align:center;">100%</span>
       <span onclick="zoom(0.1)">+</span>
     </div>
-    <div class="tb-icon" title="Fit screen" onclick="fit()">⊡</div>
-    <div class="tb-icon on" title="Sidebar" id="sb-btn" onclick="toggleSB()">☰</div>
-    <div class="tb-icon" title="Theme" id="theme-btn" onclick="toggleTheme()">☾</div>
-    <div class="tb-icon" title="Lock" id="lock-btn" onclick="toggleLock()">🔓</div>
-    <div class="tb-avatar">ES</div>
+    <div class="icon-btn" id="fit-btn" title="Fit to screen" onclick="fitScreen()">⊡</div>
+    <div class="icon-btn" id="sidebar-btn" title="Toggle sidebar" onclick="toggleSidebar()">☰</div>
+    <div class="icon-btn" id="theme-btn" title="Toggle light/dark" onclick="toggleTheme()">☾</div>
+    <div class="icon-btn" id="lock-btn" title="Lock canvas" onclick="toggleLock()">🔓</div>
+    <div class="cb-avatar">JD</div>
   </div>
 </div>
 
 <!-- ═══ SIDEBAR ═══ -->
 <div id="sidebar">
   <div class="sb-scroll">
-    <div class="sb-section">
-      <div class="sb-sec-label">Canvas</div>
-      <div class="sb-item on" onclick="sbFilter('all',this)">
-        <div class="sb-pip" style="background:rgba(127,119,221,0.15);">⊞</div>
-        <div class="sb-lbl">All Widgets</div>
-      </div>
-      <div class="sb-item" onclick="sbFilter('stats',this)">
-        <div class="sb-pip" style="background:rgba(196,168,74,0.12);">📊</div>
-        <div class="sb-lbl">Stats</div>
-      </div>
+    <div class="sb-group-label">Overview</div>
+    <div class="sb-item active" onclick="filterSidebar('all',this)">
+      <div class="sb-pip" style="background:rgba(127,119,221,0.2);">⊞</div>
+      <div class="sb-label">All Widgets</div>
     </div>
-    <div class="sb-div"></div>
-    <div class="sb-section">
-      <div class="sb-sec-label">Business</div>
-      <div class="sb-item" onclick="sbFilter('business',this)">
-        <div class="sb-pip" style="background:rgba(196,168,74,0.12);">🏢</div>
-        <div class="sb-lbl">Businesses</div>
-      </div>
-      <div class="sb-item" onclick="sbFilter('finance',this)">
-        <div class="sb-pip" style="background:rgba(39,174,96,0.12);">💰</div>
-        <div class="sb-lbl">Finance</div>
-      </div>
+    <div class="sb-item" onclick="filterSidebar('stats',this)">
+      <div class="sb-pip" style="background:rgba(196,168,74,0.15);">📊</div>
+      <div class="sb-label">Stats Overview</div>
+    </div>
+
+    <div class="sb-divider"></div>
+    <div class="sb-group-label">Business</div>
+    <div class="sb-item" onclick="filterSidebar('business',this)">
+      <div class="sb-pip" style="background:rgba(196,168,74,0.15);">🏢</div>
+      <div class="sb-label">Businesses</div>
+    </div>
+    <div class="sb-item" onclick="filterSidebar('finance',this)">
+      <div class="sb-pip" style="background:rgba(46,204,113,0.15);">💰</div>
+      <div class="sb-label">Finance</div>
+    </div>
+    <div class="sb-item" onclick="filterSidebar('tasks',this)">
+      <div class="sb-pip" style="background:rgba(55,138,221,0.15);">✅</div>
+      <div class="sb-label">Tasks</div>
+      <div class="sb-badge" id="task-badge">0</div>
+    </div>
+    <div class="sb-item" onclick="filterSidebar('notes',this)">
+      <div class="sb-pip" style="background:rgba(127,119,221,0.15);">📝</div>
+      <div class="sb-label">Notes</div>
+    </div>
+
+    <div class="sb-divider"></div>
+    <div class="sb-group-label">Personal</div>
+    <div class="sb-item" onclick="filterSidebar('habits',this)">
+      <div class="sb-pip" style="background:rgba(127,119,221,0.15);">⚡</div>
+      <div class="sb-label">Habits</div>
+    </div>
+    <div class="sb-item" onclick="filterSidebar('personal',this)">
+      <div class="sb-pip" style="background:rgba(127,119,221,0.15);">❋</div>
+      <div class="sb-label">Personal Space</div>
+    </div>
+    <div class="sb-item" onclick="filterSidebar('sticky',this)">
+      <div class="sb-pip" style="background:rgba(196,168,74,0.15);">📌</div>
+      <div class="sb-label">Sticky Notes</div>
+    </div>
+  </div>
+
+  <!-- BUSINESS SWITCHER -->
+  <div class="biz-switcher">
+    <div class="biz-sw-label">Your Businesses</div>
+    <div class="biz-sw-item active" onclick="selectBusiness(this)">
+      <div class="biz-sw-pip" style="background:#7F77DD;">A</div>
+      <div class="biz-sw-name">Apex Studio</div>
+      <div class="biz-sw-dot" style="background:#2ecc71;"></div>
+    </div>
+    <div class="biz-sw-item" onclick="selectBusiness(this)">
+      <div class="biz-sw-pip" style="background:#C4A84A;">N</div>
+      <div class="biz-sw-name">NovaTech Ltd</div>
+      <div class="biz-sw-dot" style="background:#2ecc71;"></div>
+    </div>
+    <div class="biz-sw-item" onclick="selectBusiness(this)">
+      <div class="biz-sw-pip" style="background:#378ADD;">K</div>
+      <div class="biz-sw-name">Koda Retail</div>
+      <div class="biz-sw-dot" style="background:#888;"></div>
+    </div>
+    <div class="biz-sw-item" onclick="selectBusiness(this)">
+      <div class="biz-sw-pip" style="background:#993556;">V</div>
+      <div class="biz-sw-name">Volta Media</div>
+      <div class="biz-sw-dot" style="background:#2ecc71;"></div>
+    </div>
+    <div class="biz-add-row" onclick="addBusiness()">
+      <div class="biz-add-icon">+</div>
+      <div class="biz-add-text">Add business</div>
+    </div>
+  </div>
+
+  <div class="sb-user">
+    <div class="sb-user-avatar">JD</div>
+    <div class="sb-user-info">
+      <div class="uname">Jay D.</div>
+      <div class="urole">Owner · 4 businesses</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CANVAS ═══ -->
+<div id="canvas-wrap">
+  <div id="canvas">
+    <div id="empty-state">
+      <h2>XC4 Canvas</h2>
+      <p>Type a name in the <b>Add Widget</b> box above and press Add.<br>Or use the toolbar below to drop a widget on the canvas.<br><br>Drag · Resize · Zoom · Save — everything auto-saves.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ FLOAT TOOLBAR ═══ -->
+<div id="float-bar">
+  <button class="fb-btn" onclick="spawnCard('sticky','Sticky Note')"><div class="fb-icon">📌</div><div class="fb-lbl">Sticky</div></button>
+  <button class="fb-btn" onclick="spawnCard('notes','Notes')"><div class="fb-icon">📝</div><div class="fb-lbl">Note</div></button>
+  <button class="fb-btn" onclick="spawnCard('tasks','Tasks')"><div class="fb-icon">✅</div><div class="fb-lbl">Tasks</div></button>
+  <div class="fb-sep"></div>
+  <button class="fb-btn" onclick="spawnCard('finance','Finance')"><div class="fb-icon">💰</div><div class="fb-lbl">Finance</div></button>
+  <button class="fb-btn" onclick="spawnCard('business','Businesses')"><div class="fb-icon">🏢</div><div class="fb-lbl">Biz</div></button>
+  <button class="fb-btn" onclick="spawnCard('habits','Habits')"><div class="fb-icon">⚡</div><div class="fb-lbl">Habits</div></button>
+  <button class="fb-btn" onclick="spawnCard('stats','Stats')"><div class="fb-icon">📊</div><div class="fb-lbl">Stats</div></button>
+  <button class="fb-btn" onclick="spawnCard('clock','Clock')"><div class="fb-icon">🕐</div><div class="fb-lbl">Clock</div></button>
+  <div class="fb-sep"></div>
+  <button class="fb-btn" onclick="fitScreen()"><div class="fb-icon">⊡</div><div class="fb-lbl">Fit</div></button>
+  <button class="fb-btn" onclick="confirmClear()"><div class="fb-icon">🗑</div><div class="fb-lbl">Clear</div></button>
+</div>
+
+<!-- ═══ STATUS BAR ═══ -->
+<div id="statusbar">
+  <div class="status-chip" id="pos-chip">x:0 y:0</div>
+  <div class="status-chip" id="count-chip">0 widgets</div>
+  <div class="status-chip" id="save-chip">Saved ✓</div>
+</div>
+
+<!-- ═══ CONTEXT MENU ═══ -->
+<div id="ctx">
+  <div class="ctx-i" onclick="ctxDupe()">⧉ &nbsp;Duplicate</div>
+  <div class="ctx-i" onclick="ctxFront()">▲ &nbsp;Bring to front</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-i" onclick="spawnCard('sticky','Sticky')">📌 &nbsp;Add sticky here</div>
+  <div class="ctx-i" onclick="spawnCard('notes','Note')">📝 &nbsp;Add note here</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-i danger" onclick="ctxDelete()">✕ &nbsp;Delete widget</div>
+</div>
+
+<!-- ═══ TOAST ═══ -->
+<div id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════════
+   STATE & STORAGE
+═══════════════════════════════════════════════ */
+const STORE_KEY = 'xc4_canvas_v3';
+const THEME_KEY = 'xc4_theme';
+const MODE_KEY  = 'xc4_mode';
+
+let cx = 0, cy = 0, cscale = 1;
+let isPanning = false, panX = 0, panY = 0;
+let isDragging = false, dragCard = null, dox = 0, doy = 0;
+let isLocked = false;
+let sidebarOpen = true;
+let cardIdCounter = 0;
+let ctxTarget = null;
+let currentFilter = 'all';
+
+const $canvas = document.getElementById('canvas');
+const $wrap   = document.getElementById('canvas-wrap');
+const $empty  = document.getElementById('empty-state');
+const $ctx    = document.getElementById('ctx');
+const $toast  = document.getElementById('toast');
+
+/* ═══════════════════════════════════════════════
+   PERSIST
+═══════════════════════════════════════════════ */
+function saveAll() {
+  const cards = [];
+  document.querySelectorAll('.card').forEach(c => {
+    const ta = c.querySelector('textarea');
+    const inputs = c.querySelectorAll('input[type=text]');
+    cards.push({
+      id: c.id, type: c.dataset.type, title: c.dataset.title,
+      x: parseFloat(c.style.left), y: parseFloat(c.style.top),
+      w: c.style.width || '', h: c.style.minHeight || '',
+      note: ta ? ta.value : '',
+      z: c.style.zIndex || '1'
+    });
+  });
+  localStorage.setItem(STORE_KEY, JSON.stringify(cards));
+  showSaveStatus();
+}
+
+function loadAll() {
+  let data;
+  try { data = JSON.parse(localStorage.getItem(STORE_KEY)) || []; } catch(e) { data = []; }
+  data.forEach(d => {
+    spawnCard(d.type || 'custom', d.title || 'Widget', d.x, d.y, d.note, d.w, d.h, d.z, d.id);
+  });
+}
+
+function showSaveStatus() {
+  const chip = document.getElementById('save-chip');
+  chip.textContent = 'Saving…';
+  setTimeout(() => { chip.textContent = 'Saved ✓'; }, 400);
+}
+
+/* ═══════════════════════════════════════════════
+   CANVAS TRANSFORM
+═══════════════════════════════════════════════ */
+function applyT() {
+  $canvas.style.transform = `translate(${cx}px,${cy}px) scale(${cscale})`;
+  document.getElementById('zoom-lbl').textContent = Math.round(cscale*100)+'%';
+  document.getElementById('pos-chip').textContent = `x:${Math.round(-cx/cscale)} y:${Math.round(-cy/cscale)}`;
+  $wrap.style.setProperty('--cx', cx+'px');
+  $wrap.style.setProperty('--cy', cy+'px');
+}
+
+function zoom(delta, px, py) {
+  const prev = cscale;
+  cscale = Math.min(2.5, Math.max(0.15, cscale + delta));
+  const ox = px ?? window.innerWidth/2;
+  const oy = py ?? window.innerHeight/2;
+  cx = ox - (ox - cx) * (cscale/prev);
+  cy = oy - (oy - cy) * (cscale/prev);
+  applyT();
+}
+
+function fitScreen() {
+  cscale = 0.82;
+  const sw = sidebarOpen ? 210 : 0;
+  cx = sw + 40;
+  cy = 70;
+  applyT();
+}
+
+/* ═══════════════════════════════════════════════
+   PANNING (mouse + touch)
+═══════════════════════════════════════════════ */
+$wrap.addEventListener('mousedown', e => {
+  if (isDragging) return;
+  if (e.target === $wrap || e.target === $canvas || e.target === $empty) {
+    closeCtx(); closeAddPanel();
+    if (isLocked) return;
+    isPanning = true;
+    panX = e.clientX - cx; panY = e.clientY - cy;
+    $wrap.classList.add('panning');
+  }
+});
+
+window.addEventListener('mousemove', e => {
+  if (isPanning && !isDragging) {
+    cx = e.clientX - panX; cy = e.clientY - panY; applyT();
+  }
+  if (isDragging && dragCard) {
+    const x = (e.clientX - cx)/cscale - dox;
+    const y = (e.clientY - cy)/cscale - doy;
+    dragCard.style.left = x+'px'; dragCard.style.top = y+'px';
+  }
+});
+
+window.addEventListener('mouseup', () => {
+  isPanning = false; $wrap.classList.remove('panning');
+  if (isDragging && dragCard) {
+    dragCard.classList.remove('dragging');
+    isDragging = false; dragCard = null;
+    saveAll();
+  }
+});
+
+// Touch panning
+let tp1 = null;
+$wrap.addEventListener('touchstart', e => {
+  if (e.touches.length === 1 && (e.target === $wrap || e.target === $canvas)) {
+    const t = e.touches[0];
+    isPanning = true; panX = t.clientX - cx; panY = t.clientY - cy;
+  }
+}, {passive:true});
+$wrap.addEventListener('touchmove', e => {
+  if (isPanning && e.touches.length === 1) {
+    const t = e.touches[0];
+    cx = t.clientX - panX; cy = t.clientY - panY; applyT();
+  }
+}, {passive:true});
+$wrap.addEventListener('touchend', () => { isPanning = false; });
+
+// Wheel zoom
+$wrap.addEventListener('wheel', e => {
+  e.preventDefault();
+  const d = e.deltaY > 0 ? -0.07 : 0.07;
+  zoom(d, e.clientX, e.clientY);
+}, {passive:false});
+
+/* ═══════════════════════════════════════════════
+   CONTEXT MENU
+═══════════════════════════════════════════════ */
+document.addEventListener('contextmenu', e => {
+  if ($wrap.contains(e.target)) {
+    e.preventDefault();
+    $ctx.style.left = Math.min(e.clientX, window.innerWidth-180)+'px';
+    $ctx.style.top  = Math.min(e.clientY, window.innerHeight-200)+'px';
+    ctxTarget = e.target.closest('.card');
+    $ctx.classList.add('open');
+  }
+});
+document.addEventListener('click', e => {
+  if (!e.target.closest('#ctx')) closeCtx();
+  if (!e.target.closest('#add-box')) closeAddPanel();
+});
+function closeCtx() { $ctx.classList.remove('open'); }
+function ctxDelete() { if(ctxTarget){ctxTarget.remove();updateCount();saveAll();}closeCtx(); }
+function ctxDupe() {
+  if (!ctxTarget) return;
+  const c = ctxTarget.cloneNode(true);
+  c.style.left = (parseFloat(ctxTarget.style.left)+25)+'px';
+  c.style.top  = (parseFloat(ctxTarget.style.top)+25)+'px';
+  c.id = 'card-'+(++cardIdCounter);
+  bindCard(c); $canvas.appendChild(c);
+  updateCount(); saveAll(); closeCtx();
+}
+function ctxFront() { if(ctxTarget){ctxTarget.style.zIndex=++cardIdCounter*10;}closeCtx(); }
+
+/* ═══════════════════════════════════════════════
+   SPAWN CARD
+═══════════════════════════════════════════════ */
+function getCenter() {
+  const sw = sidebarOpen ? 210 : 0;
+  const vw = window.innerWidth - sw;
+  const vh = window.innerHeight - 52;
+  return {
+    x: (-cx + sw + vw/2) / cscale - 140 + (Math.random()-0.5)*80,
+    y: (-cy + 52 + vh/2) / cscale - 100 + (Math.random()-0.5)*60
+  };
+}
+
+function spawnCard(type, title, x, y, savedNote, savedW, savedH, savedZ, savedId) {
+  const id = savedId || ('card-'+(++cardIdCounter));
+  const pos = (x !== undefined && y !== undefined) ? {x,y} : getCenter();
+  const z   = savedZ || (++cardIdCounter * 10);
+
+  const el = document.createElement('div');
+  el.className = 'card'; el.id = id;
+  el.dataset.type = type; el.dataset.title = title;
+  el.style.left = pos.x+'px'; el.style.top = pos.y+'px';
+  el.style.zIndex = z;
+  if (savedW) el.style.width = savedW;
+  if (savedH) el.style.minHeight = savedH;
+
+  const body = buildCardBody(type, title, savedNote);
+  el.innerHTML = buildCardShell(type, title) + body + '<div class="resize-handle"></div>';
+
+  bindCard(el);
+  $canvas.appendChild(el);
+  updateCount();
+  closeAddPanel();
+  if (!savedId) { showToast('✦ '+title+' added', 'success'); saveAll(); }
+  return el;
+}
+
+function buildCardShell(type, title) {
+  const icons = {business:'🏢',finance:'💰',tasks:'✅',notes:'📝',habits:'⚡',stats:'📊',clock:'🕐',sticky:'📌',custom:'✦',personal:'❋'};
+  const colors = {business:'rgba(196,168,74,0.15)',finance:'rgba(46,204,113,0.12)',tasks:'rgba(55,138,221,0.12)',notes:'rgba(127,119,221,0.12)',habits:'rgba(127,119,221,0.12)',stats:'rgba(196,168,74,0.12)',clock:'rgba(55,138,221,0.12)',sticky:'rgba(196,168,74,0.1)',custom:'rgba(127,119,221,0.1)',personal:'rgba(127,119,221,0.1)'};
+  const typeLabels = {business:'Business',finance:'Finance',tasks:'Tasks',notes:'Notes',habits:'Habits',stats:'Stats',clock:'Clock',sticky:'Sticky',custom:'Custom',personal:'Personal'};
+  return `<div class="card-hdr">
+    <div class="hdr-pip" style="background:${colors[type]||colors.custom};">${icons[type]||'✦'}</div>
+    <div class="hdr-title">${esc(title)}</div>
+    <div class="hdr-type">${typeLabels[type]||'Widget'}</div>
+    <div class="hdr-close" onclick="this.closest('.card').remove();updateCount();saveAll();">✕</div>
+  </div><div class="card-body">`;
+}
+
+function buildCardBody(type, title, note) {
+  const n = note || '';
+  const close = '</div>';
+  if (type === 'business') return `
+    <div class="biz-row"><div class="biz-rw-pip" style="background:#7F77DD;">A</div><div class="biz-rw-name">Apex Studio</div><div class="biz-rw-rev">£24.8k</div><div class="biz-rw-dot" style="background:#2ecc71;"></div></div>
+    <div class="biz-row"><div class="biz-rw-pip" style="background:#C4A84A;">N</div><div class="biz-rw-name">NovaTech Ltd</div><div class="biz-rw-rev">£18.2k</div><div class="biz-rw-dot" style="background:#2ecc71;"></div></div>
+    <div class="biz-row"><div class="biz-rw-pip" style="background:#378ADD;">K</div><div class="biz-rw-name">Koda Retail</div><div class="biz-rw-rev">£9.1k</div><div class="biz-rw-dot" style="background:#888;"></div></div>
+    <div class="biz-row"><div class="biz-rw-pip" style="background:#993556;">V</div><div class="biz-rw-name">Volta Media</div><div class="biz-rw-rev">£31.5k</div><div class="biz-rw-dot" style="background:#2ecc71;"></div></div>
+    <div class="biz-total"><span style="font-size:10px;color:var(--muted);">Total revenue</span><span style="font-size:14px;font-weight:800;color:var(--gold);font-family:var(--font-m);">£83.6k</span></div>
+  ${close}`;
+  if (type === 'finance') return `
+    <div class="fin-row"><div class="fin-meta"><div class="fin-lbl">Revenue</div><div class="fin-val" style="color:#2ecc71;">£24,800</div></div><div class="fin-track"><div class="fin-fill" style="background:#2ecc71;width:78%;"></div></div></div>
+    <div class="fin-row"><div class="fin-meta"><div class="fin-lbl">Services</div><div class="fin-val" style="color:var(--gold);">£19,300</div></div><div class="fin-track"><div class="fin-fill" style="background:var(--gold);width:62%;"></div></div></div>
+    <div class="fin-row"><div class="fin-meta"><div class="fin-lbl">Products</div><div class="fin-val" style="color:var(--blue-light);">£5,500</div></div><div class="fin-track"><div class="fin-fill" style="background:var(--blue);width:18%;"></div></div></div>
+    <div class="fin-row"><div class="fin-meta"><div class="fin-lbl">Expenses</div><div class="fin-val" style="color:var(--red);">£3,200</div></div><div class="fin-track"><div class="fin-fill" style="background:var(--red);width:10%;"></div></div></div>
+    <div class="fin-total-row"><span style="font-size:10px;color:var(--muted);">Net profit</span><span style="font-size:14px;font-weight:800;color:#2ecc71;font-family:var(--font-m);">£21,600</span></div>
+  ${close}`;
+  if (type === 'tasks') return `
+    <div class="task-row" onclick="toggleTask(this)"><div class="task-chk done"></div><div class="task-txt done">Morning standup</div><div class="task-tag" style="background:var(--blue-faint);color:var(--blue-light);">done</div></div>
+    <div class="task-row" onclick="toggleTask(this)"><div class="task-chk"></div><div class="task-txt">Client proposal</div><div class="task-tag" style="background:rgba(231,76,60,0.1);color:var(--red);">urgent</div></div>
+    <div class="task-row" onclick="toggleTask(this)"><div class="task-chk"></div><div class="task-txt">Review brand assets</div><div class="task-tag" style="background:var(--gold-faint);color:var(--gold);">high</div></div>
+    <div class="task-row" onclick="toggleTask(this)"><div class="task-chk"></div><div class="task-txt">Invoice client #042</div><div class="task-tag" style="background:var(--purple-faint);color:var(--purple-light);">medium</div></div>
+    <div class="task-input-row"><input type="text" placeholder="＋ Add task…" onkeydown="addTask(event,this)"/></div>
+  ${close}`;
+  if (type === 'notes') return `
+    <textarea class="note-ta" placeholder="Write your note…" oninput="autoSave()">${esc(n)}</textarea>
+    <div class="note-tags">
+      <div class="note-tag-pill" style="background:var(--gold-faint);border-color:var(--border-gold);color:var(--gold);">Apex Studio</div>
+      <div class="note-tag-pill" style="background:var(--purple-faint);border-color:var(--border);color:var(--purple-light);">ideas</div>
+      <div class="note-tag-pill" style="background:var(--bg3);border-color:var(--border);color:var(--muted);">+ tag</div>
+    </div>
+  ${close}`;
+  if (type === 'habits') return `
+    <div class="habit-row"><div class="habit-pip done" style="background:var(--purple);" onclick="toggleHabit(this)">✓</div><div class="habit-name">Morning run</div><div class="habit-streak">🔥 7</div></div>
+    <div class="habit-row"><div class="habit-pip done" style="background:var(--gold);" onclick="toggleHabit(this)">✓</div><div class="habit-name">Read 30 mins</div><div class="habit-streak">🔥 12</div></div>
+    <div class="habit-row"><div class="habit-pip" onclick="toggleHabit(this)"></div><div class="habit-name">Journal</div><div class="habit-streak" style="color:var(--muted);">3</div></div>
+    <div class="habit-row"><div class="habit-pip" onclick="toggleHabit(this)"></div><div class="habit-name">Meditate</div><div class="habit-streak" style="color:var(--muted);">5</div></div>
+    <div class="habit-row"><div class="habit-pip" onclick="toggleHabit(this)"></div><div class="habit-name">Cold shower</div><div class="habit-streak" style="color:var(--muted);">2</div></div>
+    <div class="habit-prog-wrap"><div style="display:flex;justify-content:space-between;"><span style="font-size:10px;color:var(--muted);">Today</span><span style="font-size:10px;color:var(--purple);font-family:var(--font-m);">2/5</span></div><div class="habit-prog-track"><div class="habit-prog-fill" style="width:40%;"></div></div></div>
+  ${close}`;
+  if (type === 'stats') return `
+    <div class="stat-grid">
+      <div class="stat-item"><div class="stat-val" style="color:var(--gold);">£83.6k</div><div class="stat-lbl">Total revenue</div><div class="stat-chg" style="color:#2ecc71;">↑ +18%</div></div>
+      <div class="stat-item"><div class="stat-val" style="color:var(--blue-light);">47</div><div class="stat-lbl">Open tasks</div><div class="stat-chg" style="color:var(--red);">8 late</div></div>
+      <div class="stat-item"><div class="stat-val" style="color:var(--purple);">4</div><div class="stat-lbl">Businesses</div><div class="stat-chg" style="color:var(--muted);">active</div></div>
+      <div class="stat-item"><div class="stat-val" style="color:var(--white);">12</div><div class="stat-lbl">Projects</div><div class="stat-chg" style="color:#2ecc71;">6 on track</div></div>
+    </div>
+  ${close}`;
+  if (type === 'clock') {
+    const cid = 'clk-'+Date.now();
+    setTimeout(()=>startClock(cid),100);
+    return `<div class="clock-date" id="${cid}-d"></div><div class="clock-big" id="${cid}-t"></div>
+    <div class="clock-zones"><div class="clock-zone">Local</div><div class="clock-zone">UTC</div><div class="clock-zone">NYC</div></div>${close}`;
+  }
+  if (type === 'sticky') return `<textarea class="sticky-ta" placeholder="Write anything…" oninput="autoSave()">${esc(n)}</textarea>${close}`;
+  // custom / personal / fallback
+  return `
+    <textarea class="custom-ta" placeholder="Start writing or planning…" oninput="autoSave()">${esc(n)}</textarea>
+    <div style="margin-top:8px;padding-top:8px;border-top:0.5px solid var(--border);font-size:10px;color:var(--muted);">${esc(title)} · XC4 widget</div>
+  ${close}`;
+}
+
+/* ═══════════════════════════════════════════════
+   BIND CARD DRAG + RESIZE
+═══════════════════════════════════════════════ */
+function bindCard(el) {
+  const hdr = el.querySelector('.card-hdr');
+  // Mouse drag
+  hdr.addEventListener('mousedown', e => {
+    if (e.target.classList.contains('hdr-close')) return;
+    if (isLocked) return;
+    e.stopPropagation();
+    isDragging = true; dragCard = el;
+    el.classList.add('dragging');
+    const r = el.getBoundingClientRect();
+    dox = (e.clientX - r.left) / cscale;
+    doy = (e.clientY - r.top) / cscale;
+    el.style.zIndex = ++cardIdCounter * 10;
+  });
+  // Touch drag
+  hdr.addEventListener('touchstart', e => {
+    if (isLocked) return;
+    const t = e.touches[0];
+    isDragging = true; dragCard = el;
+    el.classList.add('dragging');
+    const r = el.getBoundingClientRect();
+    dox = (t.clientX - r.left) / cscale;
+    doy = (t.clientY - r.top) / cscale;
+    el.style.zIndex = ++cardIdCounter * 10;
+  }, {passive:true});
+  document.addEventListener('touchmove', e => {
+    if (!isDragging || dragCard !== el) return;
+    const t = e.touches[0];
+    el.style.left = ((t.clientX - cx)/cscale - dox)+'px';
+    el.style.top  = ((t.clientY - cy)/cscale - doy)+'px';
+  }, {passive:true});
+  document.addEventListener('touchend', () => {
+    if (isDragging && dragCard === el) {
+      el.classList.remove('dragging');
+      isDragging = false; dragCard = null; saveAll();
+    }
+  });
+  // Resize
+  const rh = el.querySelector('.resize-handle');
+  if (rh) {
+    rh.addEventListener('mousedown', e => {
+      e.stopPropagation();
+      const sx = e.clientX, sw2 = el.offsetWidth;
+      const sy = e.clientY, sh = el.offsetHeight;
+      const mv = ev => {
+        el.style.width = Math.max(200, sw2 + (ev.clientX-sx)/cscale)+'px';
+        el.style.minHeight = Math.max(100, sh + (ev.clientY-sy)/cscale)+'px';
+      };
+      const up = () => { window.removeEventListener('mousemove',mv); window.removeEventListener('mouseup',up); saveAll(); };
+      window.addEventListener('mousemove',mv); window.addEventListener('mouseup',up);
+    });
+  }
+  // Save on textarea change
+  el.querySelectorAll('textarea').forEach(ta => ta.addEventListener('input', () => debounceSave()));
+}
+
+/* ═══════════════════════════════════════════════
+   INTERACTIVE WIDGET FUNCTIONS
+═══════════════════════════════════════════════ */
+function toggleTask(row) {
+  const chk = row.querySelector('.task-chk');
+  const txt = row.querySelector('.task-txt');
+  chk.classList.toggle('done');
+  txt.classList.toggle('done');
+  debounceSave();
+}
+function addTask(e, inp) {
+  if (e.key !== 'Enter' || !inp.value.trim()) return;
+  const row = document.createElement('div');
+  row.className = 'task-row'; row.onclick = () => toggleTask(row);
+  row.innerHTML = `<div class="task-chk"></div><div class="task-txt">${esc(inp.value.trim())}</div>`;
+  inp.closest('.task-input-row').before(row);
+  inp.value = ''; updateCount(); debounceSave();
+}
+function toggleHabit(pip) {
+  const done = pip.classList.contains('done');
+  pip.classList.toggle('done');
+  pip.textContent = done ? '' : '✓';
+  pip.style.background = done ? 'transparent' : 'var(--purple)';
+  pip.style.borderColor = done ? 'var(--dimmer)' : 'transparent';
+  debounceSave();
+}
+function startClock(cid) {
+  function tick() {
+    const te = document.getElementById(cid+'-t');
+    const de = document.getElementById(cid+'-d');
+    if (!te) return;
+    const now = new Date();
+    te.textContent = now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    de.textContent = now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    setTimeout(tick, 1000);
+  }
+  tick();
+}
+
+/* ═══════════════════════════════════════════════
+   ADD FUNCTION INPUT
+═══════════════════════════════════════════════ */
+document.getElementById('add-submit').addEventListener('click', doAdd);
+document.getElementById('fn-input').addEventListener('keydown', e => { if(e.key==='Enter') doAdd(); });
+function doAdd() {
+  const inp = document.getElementById('fn-input');
+  const sel = document.getElementById('widget-type-select');
+  const name = inp.value.trim() || sel.options[sel.selectedIndex].text.replace(/^.+\s/,'');
+  const type = sel.value;
+  spawnCard(type, name);
+  inp.value = '';
+}
+function closeAddPanel() { /* placeholder for future panel */ }
+
+/* ═══════════════════════════════════════════════
+   FILTER
+═══════════════════════════════════════════════ */
+document.querySelectorAll('.filter-pill').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-pill').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    applyFilter();
+  });
+});
+function filterSidebar(type, el) {
+  document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
+  currentFilter = type;
+  // sync pills
+  document.querySelectorAll('.filter-pill').forEach(p => {
+    p.classList.toggle('active', p.dataset.filter === type);
+  });
+  applyFilter();
+}
+function applyFilter() {
+  document.querySelectorAll('.card').forEach(c => {
+    const match = currentFilter === 'all' || c.dataset.type === currentFilter;
+    c.classList.toggle('dimmed', !match);
+  });
+}
+
+/* ═══════════════════════════════════════════════
+   SIDEBAR & MODE & THEME & LOCK
+═══════════════════════════════════════════════ */
+function toggleSidebar() {
+  sidebarOpen = !sidebarOpen;
+  document.getElementById('sidebar').classList.toggle('collapsed', !sidebarOpen);
+  $wrap.classList.toggle('sidebar-hidden', !sidebarOpen);
+  document.getElementById('statusbar').classList.toggle('sb-hidden', !sidebarOpen);
+  document.getElementById('sidebar-btn').classList.toggle('active', sidebarOpen);
+}
+function selectBusiness(el) {
+  document.querySelectorAll('.biz-sw-item').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
+}
+function addBusiness() {
+  const name = prompt('Business name:');
+  if (!name || !name.trim()) return;
+  const sw = document.querySelector('.biz-switcher');
+  const addRow = sw.querySelector('.biz-add-row');
+  const colors = ['#7F77DD','#C4A84A','#378ADD','#993556','#2ecc71','#e74c3c'];
+  const col = colors[Math.floor(Math.random()*colors.length)];
+  const item = document.createElement('div');
+  item.className = 'biz-sw-item';
+  item.onclick = () => selectBusiness(item);
+  item.innerHTML = `<div class="biz-sw-pip" style="background:${col};">${name[0].toUpperCase()}</div><div class="biz-sw-name">${esc(name)}</div><div class="biz-sw-dot" style="background:#2ecc71;"></div>`;
+  sw.insertBefore(item, addRow);
+  showToast('🏢 '+name+' added', 'success');
+}
+function setMode(m) {
+  localStorage.setItem(MODE_KEY, m);
+  const bb = document.getElementById('biz-mode-btn');
+  const pb = document.getElementById('per-mode-btn');
+  bb.className = 'mode-btn' + (m==='biz' ? ' biz-active' : '');
+  pb.className = 'mode-btn' + (m==='personal' ? ' per-active' : '');
+}
+function toggleTheme() {
+  document.body.classList.toggle('light-mode');
+  const isLight = document.body.classList.contains('light-mode');
+  document.getElementById('theme-btn').textContent = isLight ? '☀' : '☾';
+  localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark');
+}
+function toggleLock() {
+  isLocked = !isLocked;
+  document.getElementById('lock-btn').textContent = isLocked ? '🔒' : '🔓';
+  document.getElementById('lock-btn').classList.toggle('active', isLocked);
+}
+
+/* ═══════════════════════════════════════════════
+   UTILS
+═══════════════════════════════════════════════ */
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function updateCount() {
+  const n = document.querySelectorAll('.card').length;
+  document.getElementById('count-chip').textContent = n+' widget'+(n!==1?'s':'');
+  document.getElementById('task-badge').textContent = document.querySelectorAll('.card[data-type=tasks]').length;
+  $empty.classList.toggle('hidden', n > 0);
+}
+let saveTimer;
+function debounceSave() { clearTimeout(saveTimer); saveTimer = setTimeout(saveAll, 800); }
+function autoSave() { debounceSave(); }
+function confirmClear() {
+  if (confirm('Remove all widgets from the canvas?')) {
+    document.querySelectorAll('.card').forEach(c=>c.remove());
+    localStorage.removeItem(STORE_KEY);
+    updateCount(); showToast('Canvas cleared','');
+  }
+}
+function showToast(msg, type) {
+  const t = document.createElement('div');
+  t.className = 'toast-msg '+(type||'');
+  t.textContent = msg;
+  $toast.appendChild(t);
+  setTimeout(() => { t.style.animation = 'toastOut 0.25s ease forwards'; setTimeout(()=>t.remove(),280); }, 2200);
+}
+
+/* ═══════════════════════════════════════════════
+   KEYBOARD SHORTCUTS
+═══════════════════════════════════════════════ */
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.key === 'f' || e.key === 'F') fitScreen();
+  if (e.key === 'l' || e.key === 'L') toggleLock();
+  if (e.key === 't' || e.key === 'T') toggleTheme();
+  if (e.key === 'b' || e.key === 'B') toggleSidebar();
+  if ((e.ctrlKey || e.metaKey) && e.key === 'z') { /* undo placeholder */ }
+  if (e.key === '=' || e.key === '+') zoom(0.1);
+  if (e.key === '-') zoom(-0.1);
+  if (e.key === 'Escape') closeCtx();
+});
+
+/* ═══════════════════════════════════════════════
+   INITIAL LOAD
+═══════════════════════════════════════════════ */
+(function init() {
+  // Theme
+  if (localStorage.getItem(THEME_KEY) === 'light') {
+    document.body.classList.add('light-mode');
+    document.getElementById('theme-btn').textContent = '☀';
+  }
+  // Mode
+  const savedMode = localStorage.getItem(MODE_KEY) || 'biz';
+  setMode(savedMode);
+  // Load saved cards
+  loadAll();
+  // If nothing saved, show default widgets
+  if (!localStorage.getItem(STORE_KEY) || JSON.parse(localStorage.getItem(STORE_KEY)).length === 0) {
+    setTimeout(() => {
+      const sw = sidebarOpen ? 210 : 0;
+      const baseX = (-cx + sw + 60) / cscale;
+      const baseY = (-cy + 100) / cscale;
+      const offs = [[0,0],[310,0],[620,0],[0,320],[310,320],[620,320]];
+      const defaults = ['stats','business','tasks','finance','habits','sticky'];
+      const titles   = ['Stats Overview','Businesses','Tasks','Finance — Apex','Habits Today','Notes'];
+      defaults.forEach((t,i) => spawnCard(t, titles[i], baseX+offs[i][0], baseY+offs[i][1]));
+    }, 100);
+  }
+  applyT();
+  updateCount();
+  // Sidebar default open
+  document.getElementById('sidebar-btn').classList.add('active');
+})();
+</script>
+</body>
+</html>
