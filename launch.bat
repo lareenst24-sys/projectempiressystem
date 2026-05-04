@@ -1,0 +1,3 @@
+@echo off
+echo  Starting ESXC4...
+npm start
