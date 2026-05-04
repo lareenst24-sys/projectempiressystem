@@ -1,233 +1,1105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AllInOne - Multi Business Canvas</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ESXC4</title>
+
   <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     :root {
-      --bg0: #07050f;
-      --bg1: #100820;
-      --bg2: #160e2e;
-      --purple: #7F77DD;
-      --gold: #C4A84A;
-      --blue: #378ADD;
-      --white: #ffffff;
-      --muted: #6a6a8a;
+      --bg: #06040d;
+      --bg-2: #0d0918;
+      --panel: rgba(17, 13, 30, 0.92);
+      --panel-2: rgba(22, 17, 38, 0.96);
+      --card: rgba(20, 16, 36, 0.96);
+      --border: rgba(136, 92, 255, 0.18);
+      --border-strong: rgba(136, 92, 255, 0.45);
+      --text: #ffffff;
+      --muted: #9d97ba;
+      --muted-2: #6f688f;
+      --purple: #8b5cff;
+      --purple-2: #b18cff;
+      --blue: #3e8bff;
+      --gold: #e1b84f;
+      --green: #23c36b;
+      --red: #ff5a64;
+      --shadow: rgba(139, 92, 255, 0.22);
+      --radius: 18px;
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body {
-      width: 100%; height: 100%; overflow: hidden;
-      background: var(--bg0);
-      font-family: 'Syne', sans-serif;
-      color: var(--white);
-      user-select: none;
+    body {
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(139, 92, 255, 0.18), transparent 30%),
+        radial-gradient(circle at top right, rgba(62, 139, 255, 0.12), transparent 30%),
+        var(--bg);
+      color: var(--text);
     }
 
-    /* Command Bar */
-    #command-bar {
-      position: fixed; top: 0; left: 0; right: 0;
-      height: 56px;
-      background: rgba(16,8,32,0.95);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid rgba(127,119,221,0.2);
-      display: flex;
-      align-items: center;
-      padding: 0 16px;
-      gap: 12px;
-      z-index: 1000;
+    button, input, textarea {
+      font-family: inherit;
     }
 
-    .logo {
-      font-size: 26px;
-      font-weight: 800;
-      background: linear-gradient(90deg, var(--purple), var(--gold));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    #add-fn-wrap {
-      background: rgba(196,168,74,0.1);
-      border: 1px solid var(--gold);
-      padding: 8px 16px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    button {
+      border: none;
       cursor: pointer;
-      font-weight: 600;
-      color: var(--gold);
     }
 
-    #add-fn-wrap:hover { background: rgba(196,168,74,0.25); }
-
-    .main-canvas {
-      position: fixed;
-      top: 56px; left: 0; right: 0; bottom: 0;
-      background: 
-        radial-gradient(circle at 50% 50%, rgba(127,119,221,0.08) 0%, transparent 60%),
-        var(--bg0);
-      overflow: hidden;
+    .app {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      grid-template-rows: 68px 1fr;
+      grid-template-areas:
+        "sidebar topbar"
+        "sidebar main";
     }
 
-    #canvas {
-      position: absolute;
-      width: 100%; height: 100%;
-      background-image: 
-        radial-gradient(circle, rgba(127,119,221,0.25) 1px, transparent 1px);
-      background-size: 28px 28px;
-      transform-origin: 0 0;
+    /* SIDEBAR */
+    .sidebar {
+      grid-area: sidebar;
+      background: rgba(11, 9, 20, 0.95);
+      border-right: 1px solid var(--border);
+      padding: 18px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
     }
 
-    .card {
-      position: absolute;
-      background: var(--bg1);
-      border: 1px solid rgba(127,119,221,0.3);
-      border-radius: 16px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-      min-width: 240px;
-      overflow: hidden;
-      cursor: move;
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 4px 6px 14px;
+      border-bottom: 1px solid var(--border);
     }
 
-    .card-header {
-      padding: 12px 16px;
-      background: var(--bg2);
+    .logo-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--purple), #44218d);
+      box-shadow: 0 0 26px var(--shadow);
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .logo-text h1 {
+      font-size: 18px;
+      letter-spacing: 0.03em;
+    }
+
+    .logo-text p {
+      margin-top: 3px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .section-title {
+      font-size: 10px;
+      color: var(--muted-2);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      padding: 0 6px;
+      font-weight: 800;
+    }
+
+    .nav-list,
+    .business-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .nav-btn,
+    .business-btn {
+      width: 100%;
+      min-height: 42px;
       display: flex;
       align-items: center;
       gap: 10px;
-      border-bottom: 1px solid rgba(127,119,221,0.2);
+      padding: 10px 12px;
+      border-radius: 14px;
+      color: var(--muted);
+      background: transparent;
+      font-size: 13px;
+      font-weight: 700;
+      transition: 0.18s ease;
+      border: 1px solid transparent;
+      text-align: left;
     }
 
-    .card-body {
+    .nav-btn:hover,
+    .business-btn:hover,
+    .nav-btn.active,
+    .business-btn.active {
+      background: rgba(139, 92, 255, 0.12);
+      border-color: var(--border);
+      color: var(--text);
+    }
+
+    .biz-pill {
+      width: 26px;
+      height: 26px;
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 900;
+      color: #fff;
+      flex: 0 0 auto;
+    }
+
+    .business-meta {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .business-meta strong {
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .business-meta span {
+      margin-top: 2px;
+      font-size: 10px;
+      color: var(--muted-2);
+    }
+
+    .mini-panel {
+      margin-top: auto;
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(225, 184, 79, 0.08);
+      border: 1px solid rgba(225, 184, 79, 0.2);
+    }
+
+    .mini-panel h3 {
+      color: var(--gold);
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .mini-stat {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    .mini-stat b {
+      color: var(--text);
+    }
+
+    /* TOPBAR */
+    .topbar {
+      grid-area: topbar;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 18px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10, 8, 18, 0.82);
+      backdrop-filter: blur(14px);
+    }
+
+    .page-title {
+      font-size: 18px;
+      font-weight: 800;
+      margin-right: 8px;
+    }
+
+    .search {
+      width: 280px;
+      height: 40px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      padding: 0 14px;
+      outline: none;
+      font-size: 13px;
+    }
+
+    .search:focus {
+      border-color: var(--border-strong);
+      box-shadow: 0 0 0 4px rgba(139, 92, 255, 0.1);
+    }
+
+    .spacer {
+      flex: 1;
+    }
+
+    .add-btn {
+      height: 40px;
+      padding: 0 16px;
+      border-radius: 12px;
+      background: rgba(225, 184, 79, 0.12);
+      border: 1px solid rgba(225, 184, 79, 0.28);
+      color: var(--gold);
+      font-weight: 800;
+      font-size: 13px;
+      transition: 0.18s ease;
+    }
+
+    .add-btn:hover {
+      background: rgba(225, 184, 79, 0.18);
+      transform: translateY(-1px);
+    }
+
+    .mode-switch {
+      display: flex;
+      gap: 8px;
+      padding: 4px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+    }
+
+    .mode-btn {
+      height: 36px;
+      padding: 0 16px;
+      border-radius: 10px;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 13px;
+      transition: 0.18s ease;
+    }
+
+    .mode-btn.active {
+      background: linear-gradient(135deg, rgba(139, 92, 255, 0.9), rgba(139, 92, 255, 0.58));
+      color: #fff;
+    }
+
+    /* MAIN */
+    .main {
+      grid-area: main;
+      position: relative;
+      overflow: hidden;
+      background-image: radial-gradient(circle, rgba(139, 92, 255, 0.2) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+
+    .board-info {
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      z-index: 10;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(17, 13, 30, 0.85);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(14px);
+      max-width: 340px;
+    }
+
+    .board-info h2 {
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+
+    .board-info p {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .canvas {
+      position: absolute;
+      inset: 0;
+    }
+
+    .widget {
+      position: absolute;
+      width: 300px;
+      min-height: 160px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      box-shadow: 0 16px 60px rgba(0, 0, 0, 0.34);
+      overflow: hidden;
+      user-select: none;
+    }
+
+    .widget.dragging {
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.52);
+      border-color: var(--border-strong);
+    }
+
+    .widget-header {
+      height: 52px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid var(--border);
+      cursor: grab;
+    }
+
+    .widget-header:active {
+      cursor: grabbing;
+    }
+
+    .widget-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-size: 14px;
+      font-weight: 900;
+      color: #fff;
+      flex: 0 0 auto;
+    }
+
+    .widget-title-wrap {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .widget-title {
+      font-size: 14px;
+      font-weight: 800;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .widget-type {
+      margin-top: 2px;
+      font-size: 10px;
+      color: var(--muted-2);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .close-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 9px;
+      background: rgba(255, 90, 100, 0.1);
+      border: 1px solid rgba(255, 90, 100, 0.22);
+      color: var(--red);
+      font-size: 14px;
+    }
+
+    .widget-body {
       padding: 14px;
       font-size: 13px;
+      color: var(--muted);
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .metric {
+      padding: 12px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+    }
+
+    .metric span {
+      display: block;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .metric b {
+      display: block;
+      margin-top: 6px;
+      font-size: 20px;
+      color: var(--text);
+    }
+
+    .metric small {
+      display: block;
+      margin-top: 5px;
+      font-size: 10px;
+      color: var(--green);
+    }
+
+    .list-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 34px;
+      border-bottom: 1px solid rgba(139, 92, 255, 0.1);
+      font-size: 12px;
+    }
+
+    .list-row:last-child {
+      border-bottom: none;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--purple);
+      flex: 0 0 auto;
+    }
+
+    .list-row b {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .row-right {
+      margin-left: auto;
+      color: var(--muted-2);
+      font-size: 11px;
+    }
+
+    .note-area {
+      width: 100%;
+      min-height: 110px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      color: var(--text);
+      resize: none;
+      outline: none;
+      padding: 12px;
+      font-size: 13px;
       line-height: 1.5;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 34px;
+      border-bottom: 1px solid rgba(139, 92, 255, 0.1);
+      font-size: 12px;
+    }
+
+    .task-item:last-child {
+      border-bottom: none;
+    }
+
+    .check {
+      width: 16px;
+      height: 16px;
+      border-radius: 5px;
+      border: 1px solid var(--border-strong);
+      display: grid;
+      place-items: center;
+      font-size: 10px;
+      color: transparent;
+      flex: 0 0 auto;
+    }
+
+    .task-item.done .check {
+      background: var(--purple);
+      color: white;
+    }
+
+    .task-item.done .task-text {
+      text-decoration: line-through;
+      opacity: 0.55;
+    }
+
+    .task-add {
+      width: 100%;
+      margin-top: 10px;
+      height: 34px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      color: var(--text);
+      padding: 0 10px;
+      outline: none;
+      font-size: 12px;
+    }
+
+    /* ADD PANEL */
+    .add-panel {
+      position: absolute;
+      top: 84px;
+      right: 18px;
+      width: 380px;
+      padding: 16px;
+      border-radius: 20px;
+      background: var(--panel-2);
+      border: 1px solid rgba(225, 184, 79, 0.24);
+      box-shadow: 0 22px 80px rgba(0, 0, 0, 0.45);
+      z-index: 25;
+      display: none;
+    }
+
+    .add-panel.open {
+      display: block;
+    }
+
+    .add-panel h3 {
+      font-size: 14px;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+
+    .add-panel p {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 14px;
+      line-height: 1.45;
+    }
+
+    .option-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .option-btn {
+      min-height: 78px;
+      padding: 12px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      color: var(--text);
+      text-align: left;
+      transition: 0.18s ease;
+    }
+
+    .option-btn:hover {
+      transform: translateY(-2px);
+      border-color: var(--border-strong);
+      background: rgba(139, 92, 255, 0.1);
+    }
+
+    .option-btn strong {
+      display: block;
+      font-size: 13px;
+      margin-top: 6px;
+    }
+
+    .option-btn span {
+      display: block;
+      margin-top: 4px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 980px) {
+      .app {
+        grid-template-columns: 1fr;
+        grid-template-rows: 72px 1fr;
+        grid-template-areas:
+          "topbar"
+          "main";
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .topbar {
+        flex-wrap: wrap;
+        height: auto;
+        min-height: 72px;
+        padding: 10px 14px;
+      }
+
+      .search {
+        width: 100%;
+        order: 10;
+      }
+
+      .board-info {
+        max-width: calc(100% - 36px);
+      }
+
+      .add-panel {
+        width: calc(100% - 24px);
+        right: 12px;
+        top: 96px;
+      }
+
+      .widget {
+        width: 280px;
+      }
     }
   </style>
 </head>
 <body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo-wrap">
+        <div class="logo-icon">✦</div>
+        <div class="logo-text">
+          <h1>ESXC4</h1>
+          <p>Private operating hub</p>
+        </div>
+      </div>
 
-  <!-- Command Bar -->
-  <div id="command-bar">
-    <div class="logo">AllInOne</div>
+      <div>
+        <div class="section-title">Navigation</div>
+        <div class="nav-list">
+          <button class="nav-btn active">⌂ Overview</button>
+          <button class="nav-btn">🏢 Business Hub</button>
+          <button class="nav-btn">⚡ Personal Space</button>
+          <button class="nav-btn">✅ Tasks</button>
+          <button class="nav-btn">📝 Notes</button>
+          <button class="nav-btn">📅 Calendar</button>
+        </div>
+      </div>
 
-    <div id="add-fn-wrap" onclick="addNewFeature()">
-      <span style="font-size:22px">+</span>
-      <span>Add Function / Widget</span>
-    </div>
+      <div>
+        <div class="section-title">Businesses</div>
+        <div class="business-list">
+          <button class="business-btn active">
+            <div class="biz-pill" style="background: var(--purple);">E</div>
+            <div class="business-meta">
+              <strong>Elvyr</strong>
+              <span>Clothing brand</span>
+            </div>
+          </button>
 
-    <div style="margin-left:auto; display:flex; gap:12px; align-items:center;">
-      <button onclick="setMode('biz')" style="padding:8px 16px; background:var(--purple); border:none; border-radius:10px; color:white;">Business Mode</button>
-      <button onclick="setMode('personal')" style="padding:8px 16px; background:var(--bg2); border:none; border-radius:10px;">Personal Mode</button>
-    </div>
+          <button class="business-btn">
+            <div class="biz-pill" style="background: var(--blue);">P</div>
+            <div class="business-meta">
+              <strong>Plimal</strong>
+              <span>E-commerce</span>
+            </div>
+          </button>
+
+          <button class="business-btn">
+            <div class="biz-pill" style="background: var(--gold); color:#111;">E</div>
+            <div class="business-meta">
+              <strong>Eanova</strong>
+              <span>Platform</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <div class="mini-panel">
+        <h3>Today at a glance</h3>
+        <div class="mini-stat"><span>Active businesses</span><b>3</b></div>
+        <div class="mini-stat"><span>Open tasks</span><b>9</b></div>
+        <div class="mini-stat"><span>Notes</span><b>4</b></div>
+        <div class="mini-stat"><span>Revenue today</span><b>$1,240</b></div>
+      </div>
+    </aside>
+
+    <header class="topbar">
+      <div class="page-title">Overview</div>
+      <input class="search" id="searchInput" placeholder="Search widgets..." />
+      <div class="spacer"></div>
+
+      <button class="add-btn" id="addFunctionBtn">＋ Add Function</button>
+
+      <div class="mode-switch">
+        <button class="mode-btn active" id="businessModeBtn">Business</button>
+        <button class="mode-btn" id="personalModeBtn">Personal</button>
+      </div>
+    </header>
+
+    <main class="main">
+      <div class="board-info">
+        <h2>Welcome to ESXC4</h2>
+        <p>
+          This is your private desktop workspace. Keep business and personal life clearly separated,
+          while still managing everything in one place.
+        </p>
+      </div>
+
+      <div class="add-panel" id="addPanel">
+        <h3>Add Function / Widget</h3>
+        <p>Pick a widget to place on the board. These are starter modules and can become full features later.</p>
+
+        <div class="option-grid">
+          <button class="option-btn" data-widget="overview">📊 <strong>Overview</strong><span>Main summary widget</span></button>
+          <button class="option-btn" data-widget="finance">💰 <strong>Finance</strong><span>Income + expenses</span></button>
+          <button class="option-btn" data-widget="tasks">✅ <strong>Tasks</strong><span>To-do execution</span></button>
+          <button class="option-btn" data-widget="notes">📝 <strong>Notes</strong><span>Quick writing area</span></button>
+          <button class="option-btn" data-widget="businesses">🏢 <strong>Businesses</strong><span>All business overview</span></button>
+          <button class="option-btn" data-widget="personal">⚡ <strong>Habits</strong><span>Personal side</span></button>
+          <button class="option-btn" data-widget="calendar">📅 <strong>Calendar</strong><span>Schedule</span></button>
+          <button class="option-btn" data-widget="links">🔗 <strong>Links</strong><span>Shortcuts</span></button>
+        </div>
+      </div>
+
+      <div class="canvas" id="canvas"></div>
+    </main>
   </div>
 
-  <!-- Canvas -->
-  <div class="main-canvas" id="canvas-wrap">
-    <div id="canvas"></div>
-  </div>
+  <script>
+    const canvas = document.getElementById("canvas");
+    const addFunctionBtn = document.getElementById("addFunctionBtn");
+    const addPanel = document.getElementById("addPanel");
+    const searchInput = document.getElementById("searchInput");
+    const businessModeBtn = document.getElementById("businessModeBtn");
+    const personalModeBtn = document.getElementById("personalModeBtn");
 
-<script>
-// Basic state
-let cardCounter = 0;
+    let widgets = JSON.parse(localStorage.getItem("esxc4_widgets")) || [];
+    let draggingId = null;
+    let dragOffsetX = 0;
+    let dragOffsetY = 0;
 
-// Add new card
-function addNewFeature() {
-  const name = prompt("Enter feature name (e.g. Invoice System, Client CRM, Daily Journal):");
-  if (!name) return;
+    const widgetTemplates = {
+      overview: {
+        type: "business",
+        title: "Overview",
+        subtitle: "Main summary",
+        icon: "📊",
+        color: "linear-gradient(135deg, var(--purple), #4d2999)",
+        width: 320,
+        html: `
+          <div class="metric-grid">
+            <div class="metric">
+              <span>Revenue</span>
+              <b>$18.7k</b>
+              <small>+12% this week</small>
+            </div>
+            <div class="metric">
+              <span>Tasks Done</span>
+              <b>67</b>
+              <small>On track</small>
+            </div>
+            <div class="metric">
+              <span>Businesses</span>
+              <b>3</b>
+              <small>All active</small>
+            </div>
+            <div class="metric">
+              <span>Notes</span>
+              <b>14</b>
+              <small>Updated today</small>
+            </div>
+          </div>
+        `
+      },
+      finance: {
+        type: "business",
+        title: "Finance Tracker",
+        subtitle: "Income & expenses",
+        icon: "💰",
+        color: "linear-gradient(135deg, var(--gold), #8b6a1b)",
+        width: 320,
+        html: `
+          <div class="list-row"><div class="dot" style="background:var(--green)"></div><b>Revenue</b><span class="row-right">$18,745</span></div>
+          <div class="list-row"><div class="dot" style="background:var(--red)"></div><b>Expenses</b><span class="row-right">$3,210</span></div>
+          <div class="list-row"><div class="dot" style="background:var(--gold)"></div><b>Profit</b><span class="row-right">$15,535</span></div>
+          <div class="list-row"><div class="dot" style="background:var(--blue)"></div><b>Orders</b><span class="row-right">16</span></div>
+        `
+      },
+      tasks: {
+        type: "business",
+        title: "Daily Tasks",
+        subtitle: "Execution board",
+        icon: "✅",
+        color: "linear-gradient(135deg, var(--blue), #224f99)",
+        width: 320,
+        html: `
+          <div class="task-list">
+            <div class="task-item"><div class="check">✓</div><div class="task-text">Review website redesign</div></div>
+            <div class="task-item"><div class="check">✓</div><div class="task-text">Process refund requests</div></div>
+            <div class="task-item"><div class="check">✓</div><div class="task-text">Update onboarding flow</div></div>
+          </div>
+          <input class="task-add" placeholder="Add task and press Enter..." />
+        `
+      },
+      notes: {
+        type: "personal",
+        title: "Notes",
+        subtitle: "Quick writing",
+        icon: "📝",
+        color: "linear-gradient(135deg, var(--purple-2), #5a35aa)",
+        width: 320,
+        html: `<textarea class="note-area" placeholder="Write here..."></textarea>`
+      },
+      businesses: {
+        type: "business",
+        title: "Business Hub",
+        subtitle: "All businesses",
+        icon: "🏢",
+        color: "linear-gradient(135deg, var(--purple), #5127a6)",
+        width: 320,
+        html: `
+          <div class="list-row"><div class="dot"></div><b>Elvyr</b><span class="row-right">$7,540</span></div>
+          <div class="list-row"><div class="dot" style="background:var(--blue)"></div><b>Plimal</b><span class="row-right">$5,320</span></div>
+          <div class="list-row"><div class="dot" style="background:var(--gold)"></div><b>Eanova</b><span class="row-right">$3,890</span></div>
+        `
+      },
+      personal: {
+        type: "personal",
+        title: "Personal Space",
+        subtitle: "Habits & life",
+        icon: "⚡",
+        color: "linear-gradient(135deg, var(--purple), #6430cc)",
+        width: 320,
+        html: `
+          <div class="list-row"><div class="dot" style="background:var(--green)"></div><b>Workout</b><span class="row-right">7 days</span></div>
+          <div class="list-row"><div class="dot" style="background:var(--gold)"></div><b>Journal</b><span class="row-right">Tonight</span></div>
+          <div class="list-row"><div class="dot" style="background:var(--blue)"></div><b>Study</b><span class="row-right">45 min</span></div>
+        `
+      },
+      calendar: {
+        type: "business",
+        title: "Calendar",
+        subtitle: "Today schedule",
+        icon: "📅",
+        color: "linear-gradient(135deg, var(--blue), #3159c7)",
+        width: 320,
+        html: `
+          <div class="list-row"><div class="dot"></div><b>Elvyr strategy call</b><span class="row-right">10:00</span></div>
+          <div class="list-row"><div class="dot" style="background:var(--blue)"></div><b>Product review</b><span class="row-right">1:00</span></div>
+          <div class="list-row"><div class="dot" style="background:var(--gold)"></div><b>Personal review</b><span class="row-right">8:30</span></div>
+        `
+      },
+      links: {
+        type: "business",
+        title: "Quick Links",
+        subtitle: "Shortcuts",
+        icon: "🔗",
+        color: "linear-gradient(135deg, var(--gold), #997324)",
+        width: 320,
+        html: `
+          <div class="list-row"><div class="dot"></div><b>Elvyr Store</b><span class="row-right">Open</span></div>
+          <div class="list-row"><div class="dot" style="background:var(--blue)"></div><b>GitHub</b><span class="row-right">Open</span></div>
+          <div class="list-row"><div class="dot" style="background:var(--purple)"></div><b>Supabase</b><span class="row-right">Open</span></div>
+        `
+      }
+    };
 
-  const canvas = document.getElementById('canvas');
-  const card = document.createElement('div');
-  card.className = 'card';
-  card.style.left = (200 + Math.random() * 400) + 'px';
-  card.style.top = (100 + Math.random() * 300) + 'px';
-  card.style.zIndex = ++cardCounter;
+    function saveWidgets() {
+      localStorage.setItem("esxc4_widgets", JSON.stringify(widgets));
+    }
 
-  card.innerHTML = `
-    <div class="card-header">
-      <strong>${name}</strong>
-      <span style="margin-left:auto; cursor:pointer; color:#e74c3c;" onclick="this.parentElement.parentElement.remove()">✕</span>
-    </div>
-    <div class="card-body">
-      <textarea style="width:100%; height:120px; background:transparent; border:none; color:white; resize:none; outline:none;" placeholder="Write notes, plans, tasks..."></textarea>
-      <div style="margin-top:12px; font-size:11px; color:var(--muted);">
-        Drag to move • Right click for options
-      </div>
-    </div>
-  `;
+    function createDefaultWidgets() {
+      if (widgets.length > 0) return;
 
-  // Make draggable
-  makeDraggable(card);
-  canvas.appendChild(card);
-}
+      const defaults = [
+        { name: "overview", x: 30, y: 110 },
+        { name: "businesses", x: 380, y: 110 },
+        { name: "tasks", x: 730, y: 110 },
+        { name: "finance", x: 30, y: 360 },
+        { name: "notes", x: 380, y: 360 },
+        { name: "personal", x: 730, y: 360 }
+      ];
 
-// Simple drag functionality
-function makeDraggable(el) {
-  let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+      defaults.forEach(item => {
+        const template = widgetTemplates[item.name];
+        widgets.push({
+          id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()),
+          template: item.name,
+          x: item.x,
+          y: item.y,
+          note: ""
+        });
+      });
 
-  el.querySelector('.card-header').onmousedown = dragMouseDown;
+      saveWidgets();
+    }
 
-  function dragMouseDown(e) {
-    if (e.target.tagName === "TEXTAREA") return;
-    e.preventDefault();
-    pos3 = e.clientX;
-    pos4 = e.clientY;
-    document.onmouseup = closeDragElement;
-    document.onmousemove = elementDrag;
-  }
+    function addWidget(name) {
+      const template = widgetTemplates[name];
+      if (!template) return;
 
-  function elementDrag(e) {
-    e.preventDefault();
-    pos1 = pos3 - e.clientX;
-    pos2 = pos4 - e.clientY;
-    pos3 = e.clientX;
-    pos4 = e.clientY;
-    el.style.top = (el.offsetTop - pos2) + "px";
-    el.style.left = (el.offsetLeft - pos1) + "px";
-  }
+      widgets.push({
+        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()),
+        template: name,
+        x: 120 + Math.random() * 220,
+        y: 140 + Math.random() * 160,
+        note: ""
+      });
 
-  function closeDragElement() {
-    document.onmouseup = null;
-    document.onmousemove = null;
-  }
-}
+      saveWidgets();
+      renderWidgets();
+      closeAddPanel();
+    }
 
-function setMode(mode) {
-  alert(`Switched to ${mode === 'biz' ? 'Business' : 'Personal'} Mode\n\nYou can expand this later.`);
-}
+    function removeWidget(id) {
+      widgets = widgets.filter(widget => widget.id !== id);
+      saveWidgets();
+      renderWidgets();
+    }
 
-// Initialize with some starter cards
-window.onload = () => {
-  const starters = [
-    "Main Shop Dashboard", 
-    "Finance Overview", 
-    "Daily Tasks", 
-    "Personal Journal"
-  ];
-  
-  starters.forEach(title => {
-    const canvas = document.getElementById('canvas');
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.style.left = (150 + Math.random()*300) + 'px';
-    card.style.top = (80 + Math.random()*200) + 'px';
-    card.style.zIndex = ++cardCounter;
-    card.innerHTML = `
-      <div class="card-header">
-        <strong>${title}</strong>
-        <span style="margin-left:auto; cursor:pointer; color:#e74c3c;" onclick="this.parentElement.parentElement.remove()">✕</span>
-      </div>
-      <div class="card-body">
-        <p>Click + in top bar to add more widgets.</p>
-      </div>
-    `;
-    makeDraggable(card);
-    canvas.appendChild(card);
-  });
-};
-</script>
+    function renderWidgets(filter = "all") {
+      canvas.innerHTML = "";
+
+      const search = searchInput.value.trim().toLowerCase();
+
+      widgets.forEach(widget => {
+        const template = widgetTemplates[widget.template];
+        if (!template) return;
+
+        if (filter !== "all" && template.type !== filter) return;
+        if (search && !template.title.toLowerCase().includes(search) && !template.subtitle.toLowerCase().includes(search)) return;
+
+        const el = document.createElement("div");
+        el.className = "widget";
+        el.dataset.id = widget.id;
+        el.style.left = widget.x + "px";
+        el.style.top = widget.y + "px";
+        el.style.width = template.width + "px";
+
+        el.innerHTML = `
+          <div class="widget-header">
+            <div class="widget-icon" style="background:${template.color}">${template.icon}</div>
+            <div class="widget-title-wrap">
+              <div class="widget-title">${template.title}</div>
+              <div class="widget-type">${template.subtitle}</div>
+            </div>
+            <button class="close-btn">×</button>
+          </div>
+          <div class="widget-body">${template.html}</div>
+        `;
+
+        const header = el.querySelector(".widget-header");
+        const closeBtn = el.querySelector(".close-btn");
+
+        header.addEventListener("mousedown", e => startDrag(e, el));
+        closeBtn.addEventListener("click", () => removeWidget(widget.id));
+
+        const noteArea = el.querySelector(".note-area");
+        if (noteArea) {
+          noteArea.value = widget.note || "";
+          noteArea.addEventListener("input", () => {
+            const target = widgets.find(item => item.id === widget.id);
+            if (target) {
+              target.note = noteArea.value;
+              saveWidgets();
+            }
+          });
+        }
+
+        el.querySelectorAll(".task-item").forEach(task => {
+          task.addEventListener("click", () => task.classList.toggle("done"));
+        });
+
+        const taskInput = el.querySelector(".task-add");
+        if (taskInput) {
+          taskInput.addEventListener("keydown", e => {
+            if (e.key !== "Enter") return;
+            const text = taskInput.value.trim();
+            if (!text) return;
+
+            const taskList = el.querySelector(".task-list");
+            const row = document.createElement("div");
+            row.className = "task-item";
+            row.innerHTML = `<div class="check">✓</div><div class="task-text">${text}</div>`;
+            row.addEventListener("click", () => row.classList.toggle("done"));
+            taskList.appendChild(row);
+            taskInput.value = "";
+          });
+        }
+
+        canvas.appendChild(el);
+      });
+    }
+
+    function startDrag(event, element) {
+      draggingId = element.dataset.id;
+      element.classList.add("dragging");
+
+      const rect = element.getBoundingClientRect();
+      const canvasRect = canvas.getBoundingClientRect();
+
+      dragOffsetX = event.clientX - rect.left;
+      dragOffsetY = event.clientY - rect.top;
+
+      function onMove(e) {
+        const x = e.clientX - canvasRect.left - dragOffsetX;
+        const y = e.clientY - canvasRect.top - dragOffsetY;
+
+        element.style.left = x + "px";
+        element.style.top = y + "px";
+      }
+
+      function onUp() {
+        const target = widgets.find(item => item.id === draggingId);
+        if (target) {
+          target.x = parseInt(element.style.left, 10);
+          target.y = parseInt(element.style.top, 10);
+          saveWidgets();
+        }
+
+        element.classList.remove("dragging");
+        draggingId = null;
+        document.removeEventListener("mousemove", onMove);
+        document.removeEventListener("mouseup", onUp);
+      }
+
+      document.addEventListener("mousemove", onMove);
+      document.addEventListener("mouseup", onUp);
+    }
+
+    function openAddPanel() {
+      addPanel.classList.add("open");
+    }
+
+    function closeAddPanel() {
+      addPanel.classList.remove("open");
+    }
+
+    function setMode(mode) {
+      if (mode === "business") {
+        businessModeBtn.classList.add("active");
+        personalModeBtn.classList.remove("active");
+        renderWidgets("business");
+      } else if (mode === "personal") {
+        personalModeBtn.classList.add("active");
+        businessModeBtn.classList.remove("active");
+        renderWidgets("personal");
+      } else {
+        businessModeBtn.classList.remove("active");
+        personalModeBtn.classList.remove("active");
+        renderWidgets("all");
+      }
+    }
+
+    addFunctionBtn.addEventListener("click", openAddPanel);
+
+    document.querySelectorAll(".option-btn").forEach(btn => {
+      btn.addEventListener("click", () => addWidget(btn.dataset.widget));
+    });
+
+    document.addEventListener("click", e => {
+      if (!e.target.closest("#addPanel") && !e.target.closest("#addFunctionBtn")) {
+        closeAddPanel();
+      }
+    });
+
+    searchInput.addEventListener("input", () => {
+      if (businessModeBtn.classList.contains("active")) {
+        renderWidgets("business");
+      } else if (personalModeBtn.classList.contains("active")) {
+        renderWidgets("personal");
+      } else {
+        renderWidgets("all");
+      }
+    });
+
+    businessModeBtn.addEventListener("click", () => setMode("business"));
+    personalModeBtn.addEventListener("click", () => setMode("personal"));
+
+    createDefaultWidgets();
+    renderWidgets("business");
+  </script>
 </body>
 </html>
