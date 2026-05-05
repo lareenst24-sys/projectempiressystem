@@ -854,3 +854,51 @@ body.light .chip {
     width: 280px;
   }
 }
+
+/* CLEAN TOP BAR: remove all tool boxes for now */
+.add-area,
+.filters,
+.search-input,
+.mode-toggle {
+  display: none !important;
+}
+
+/* Make top frame only show title + small controls */
+.top-frame {
+  grid-template-columns: auto 1fr auto !important;
+}
+
+.brand {
+  border-right: none;
+}
+
+/* Keep only right side buttons: fit, theme, lock */
+.top-actions {
+  margin-left: auto;
+}
+
+/* Make the top frame cleaner */
+.top-frame {
+  padding-left: 18px;
+  padding-right: 18px;
+}
+
+/* Remove dock tool buttons for now */
+.dock-btn[data-add],
+.dock-sep {
+  display: none !important;
+}
+
+/* Keep bottom dock as placeholder design only */
+.bottom-dock {
+  min-width: 220px;
+  justify-content: center;
+}
+
+.bottom-dock::before {
+  content: "Tool dock";
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
