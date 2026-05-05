@@ -10,6 +10,7 @@ const dockFit = document.getElementById("dockFit");
 const themeBtn = document.getElementById("themeBtn");
 const lockBtn = document.getElementById("lockBtn");
 const clearBtn = document.getElementById("clearBtn");
+
 const saveBtn = document.getElementById("saveBtn");
 const zoomInBtn = document.getElementById("zoomInBtn");
 const zoomOutBtn = document.getElementById("zoomOutBtn");
@@ -37,12 +38,10 @@ let zCounter = 20;
 let locked = false;
 let saveTimer = null;
 
-/* Smooth panning */
 let panFrame = null;
 let nextPanX = 0;
 let nextPanY = 0;
 
-/* Smooth card dragging */
 let dragFrame = null;
 let nextDragX = 0;
 let nextDragY = 0;
@@ -212,7 +211,10 @@ function renderTools() {
     canvas.appendChild(el);
   });
 
-  emptyState.classList.toggle("hidden", tools.length > 0);
+  if (emptyState) {
+    emptyState.classList.toggle("hidden", tools.length > 0);
+  }
+
   updateStatus();
 }
 
@@ -243,7 +245,6 @@ function cardDragMove(event) {
   if (!activeDragId) return;
 
   const el = document.querySelector(`[data-id="${activeDragId}"]`);
-
   if (!el) return;
 
   const rect = canvasWrap.getBoundingClientRect();
@@ -307,7 +308,6 @@ function cardTouchMove(event) {
 
   const touch = event.touches[0];
   const el = document.querySelector(`[data-id="${activeDragId}"]`);
-
   if (!el) return;
 
   const rect = canvasWrap.getBoundingClientRect();
@@ -388,7 +388,9 @@ function applyCanvasTransform() {
   canvasWrap.style.setProperty("--cx", canvasX + "px");
   canvasWrap.style.setProperty("--cy", canvasY + "px");
 
-  posChip.textContent = `x:${Math.round(-canvasX / scale)} y:${Math.round(-canvasY / scale)}`;
+  if (posChip) {
+    posChip.textContent = `x:${Math.round(-canvasX / scale)} y:${Math.round(-canvasY / scale)}`;
+  }
 }
 
 function zoom(delta) {
@@ -491,20 +493,28 @@ function loadTools() {
 }
 
 function scheduleSave() {
-  saveChip.textContent = "Saving...";
+  if (saveChip) {
+    saveChip.textContent = "Saving...";
+  }
 
   clearTimeout(saveTimer);
-
   saveTimer = setTimeout(saveTools, 500);
 }
 
 function showSaved() {
-  saveChip.textContent = "Saved ✓";
+  if (saveChip) {
+    saveChip.textContent = "Saved ✓";
+  }
 }
 
 function updateStatus() {
-  countChip.textContent = `${tools.length} tool${tools.length === 1 ? "" : "s"}`;
-  posChip.textContent = `x:${Math.round(-canvasX / scale)} y:${Math.round(-canvasY / scale)}`;
+  if (countChip) {
+    countChip.textContent = `${tools.length} tool${tools.length === 1 ? "" : "s"}`;
+  }
+
+  if (posChip) {
+    posChip.textContent = `x:${Math.round(-canvasX / scale)} y:${Math.round(-canvasY / scale)}`;
+  }
 }
 
 function toggleTheme() {
@@ -512,7 +522,9 @@ function toggleTheme() {
 
   const isLight = document.body.classList.contains("light");
 
-  themeBtn.textContent = isLight ? "☀" : "☾";
+  if (themeBtn) {
+    themeBtn.textContent = isLight ? "☀" : "☾";
+  }
 
   localStorage.setItem(THEME_KEY, isLight ? "light" : "dark");
 }
@@ -520,15 +532,20 @@ function toggleTheme() {
 function loadTheme() {
   if (localStorage.getItem(THEME_KEY) === "light") {
     document.body.classList.add("light");
-    themeBtn.textContent = "☀";
+
+    if (themeBtn) {
+      themeBtn.textContent = "☀";
+    }
   }
 }
 
 function toggleLock() {
   locked = !locked;
 
-  lockBtn.textContent = locked ? "🔒" : "🔓";
-  lockBtn.classList.toggle("active", locked);
+  if (lockBtn) {
+    lockBtn.textContent = locked ? "🔒" : "🔓";
+    lockBtn.classList.toggle("active", locked);
+  }
 
   toast(locked ? "Canvas locked" : "Canvas unlocked");
 }
@@ -537,7 +554,6 @@ function clearAll() {
   if (!confirm("Clear all tools from this browser?")) return;
 
   tools = [];
-
   localStorage.removeItem(STORE_KEY);
 
   renderTools();
@@ -545,6 +561,8 @@ function clearAll() {
 }
 
 function toast(message) {
+  if (!toastWrap) return;
+
   const el = document.createElement("div");
 
   el.className = "toast";
@@ -564,31 +582,33 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
-fitBtn.addEventListener("click", fitView);
-dockFit.addEventListener("click", fitView);
-resetViewBtn.addEventListener("click", fitView);
+if (fitBtn) fitBtn.addEventListener("click", fitView);
+if (dockFit) dockFit.addEventListener("click", fitView);
+if (resetViewBtn) resetViewBtn.addEventListener("click", fitView);
 
-themeBtn.addEventListener("click", toggleTheme);
-lockBtn.addEventListener("click", toggleLock);
-clearBtn.addEventListener("click", clearAll);
-saveBtn.addEventListener("click", saveTools);
+if (themeBtn) themeBtn.addEventListener("click", toggleTheme);
+if (lockBtn) lockBtn.addEventListener("click", toggleLock);
+if (clearBtn) clearBtn.addEventListener("click", clearAll);
+if (saveBtn) saveBtn.addEventListener("click", saveTools);
 
-zoomInBtn.addEventListener("click", () => zoom(0.1));
-zoomOutBtn.addEventListener("click", () => zoom(-0.1));
+if (zoomInBtn) zoomInBtn.addEventListener("click", () => zoom(0.1));
+if (zoomOutBtn) zoomOutBtn.addEventListener("click", () => zoom(-0.1));
 
-canvasWrap.addEventListener("mousedown", startPan);
+if (canvasWrap) {
+  canvasWrap.addEventListener("mousedown", startPan);
+
+  canvasWrap.addEventListener(
+    "wheel",
+    (event) => {
+      event.preventDefault();
+      zoom(event.deltaY > 0 ? -0.07 : 0.07);
+    },
+    { passive: false }
+  );
+}
 
 document.addEventListener("mousemove", panMove);
 document.addEventListener("mouseup", stopPan);
-
-canvasWrap.addEventListener(
-  "wheel",
-  (event) => {
-    event.preventDefault();
-    zoom(event.deltaY > 0 ? -0.07 : 0.07);
-  },
-  { passive: false }
-);
 
 document.addEventListener("keydown", (event) => {
   const tag = event.target.tagName;
