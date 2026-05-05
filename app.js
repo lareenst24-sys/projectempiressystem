@@ -5,10 +5,6 @@ const canvasWrap = document.getElementById("canvasWrap");
 const canvas = document.getElementById("canvas");
 const emptyState = document.getElementById("emptyState");
 
-const toolSelect = document.getElementById("toolSelect");
-const toolInput = document.getElementById("toolInput");
-const addBtn = document.getElementById("addBtn");
-
 const fitBtn = document.getElementById("fitBtn");
 const dockFit = document.getElementById("dockFit");
 const themeBtn = document.getElementById("themeBtn");
@@ -44,217 +40,37 @@ let saveTimer;
 const templates = {
   custom: {
     type: "custom",
-    group: "personal",
     icon: "✦",
     color: "linear-gradient(135deg, var(--purple), #5b38c6)",
     title: "Custom Tool",
-    body: () => `
-      <textarea class="custom-area" placeholder="Write or plan anything..."></textarea>
-    `,
+    body: () => `<textarea class="custom-area" placeholder="Write or plan anything..."></textarea>`,
   },
 
   note: {
     type: "note",
-    group: "personal",
     icon: "📝",
     color: "linear-gradient(135deg, var(--purple2), #6a45d8)",
     title: "Note",
-    body: () => `
-      <textarea class="note-area" placeholder="Write your notes..."></textarea>
-    `,
+    body: () => `<textarea class="note-area" placeholder="Write your notes..."></textarea>`,
   },
 
   tasks: {
     type: "tasks",
-    group: "personal",
     icon: "✅",
     color: "linear-gradient(135deg, var(--blue), #315ed0)",
     title: "Tasks",
     body: () => `
       <div class="task-list">
-        <div class="task-row">
-          <span class="check">✓</span>
-          <span class="task-text">Plan next step</span>
-        </div>
-
-        <div class="task-row">
-          <span class="check">✓</span>
-          <span class="task-text">Review progress</span>
-        </div>
-
-        <div class="task-row">
-          <span class="check">✓</span>
-          <span class="task-text">Finish one important task</span>
-        </div>
+        <div class="task-row"><span class="check">✓</span><span class="task-text">Plan next step</span></div>
+        <div class="task-row"><span class="check">✓</span><span class="task-text">Review progress</span></div>
+        <div class="task-row"><span class="check">✓</span><span class="task-text">Finish one important task</span></div>
       </div>
-
       <input class="task-input" placeholder="Add task and press Enter..." />
-    `,
-  },
-
-  finance: {
-    type: "finance",
-    group: "personal",
-    icon: "💰",
-    color: "linear-gradient(135deg, var(--gold), #987222)",
-    title: "Finance",
-    body: () => `
-      <div class="bar-row">
-        <div class="bar-top">
-          <span>Income</span>
-          <b style="color:var(--green);">₹0</b>
-        </div>
-        <div class="track">
-          <div class="fill" style="width:65%;background:var(--green);"></div>
-        </div>
-      </div>
-
-      <div class="bar-row">
-        <div class="bar-top">
-          <span>Expense</span>
-          <b style="color:var(--red);">₹0</b>
-        </div>
-        <div class="track">
-          <div class="fill" style="width:30%;background:var(--red);"></div>
-        </div>
-      </div>
-
-      <div class="bar-row">
-        <div class="bar-top">
-          <span>Saved</span>
-          <b style="color:var(--gold);">₹0</b>
-        </div>
-        <div class="track">
-          <div class="fill" style="width:45%;background:var(--gold);"></div>
-        </div>
-      </div>
-    `,
-  },
-
-  business: {
-    type: "business",
-    group: "personal",
-    icon: "🏢",
-    color: "linear-gradient(135deg, var(--purple), #4a2aa0)",
-    title: "Business Board",
-    body: () => `
-      <div class="row">
-        <span class="dot"></span>
-        <b>Main project</b>
-        <span class="row-right">active</span>
-      </div>
-
-      <div class="row">
-        <span class="dot" style="background:var(--blue);"></span>
-        <b>Tasks / clients</b>
-        <span class="row-right">track</span>
-      </div>
-
-      <div class="row">
-        <span class="dot" style="background:var(--gold);"></span>
-        <b>Ideas</b>
-        <span class="row-right">save</span>
-      </div>
-
-      <div class="row">
-        <span class="dot" style="background:var(--green);"></span>
-        <b>Growth</b>
-        <span class="row-right">plan</span>
-      </div>
-    `,
-  },
-
-  habits: {
-    type: "habits",
-    group: "personal",
-    icon: "⚡",
-    color: "linear-gradient(135deg, var(--purple), #6b34d6)",
-    title: "Habits",
-    body: () => `
-      <div class="row">
-        <span class="dot" style="background:var(--green);"></span>
-        <b>Workout</b>
-        <span class="row-right">today</span>
-      </div>
-
-      <div class="row">
-        <span class="dot" style="background:var(--gold);"></span>
-        <b>Journal</b>
-        <span class="row-right">night</span>
-      </div>
-
-      <div class="row">
-        <span class="dot" style="background:var(--blue);"></span>
-        <b>Study</b>
-        <span class="row-right">45 min</span>
-      </div>
-    `,
-  },
-
-  stats: {
-    type: "stats",
-    group: "personal",
-    icon: "📊",
-    color: "linear-gradient(135deg, var(--blue), #4b57d9)",
-    title: "Stats",
-    body: () => `
-      <div class="metric-grid">
-        <div class="metric">
-          <span>Tools</span>
-          <b>0</b>
-          <small>local</small>
-        </div>
-
-        <div class="metric">
-          <span>Tasks</span>
-          <b>0</b>
-          <small>today</small>
-        </div>
-
-        <div class="metric">
-          <span>Notes</span>
-          <b>0</b>
-          <small>saved</small>
-        </div>
-
-        <div class="metric">
-          <span>Mode</span>
-          <b>Web</b>
-          <small>private</small>
-        </div>
-      </div>
-    `,
-  },
-
-  links: {
-    type: "links",
-    group: "personal",
-    icon: "🔗",
-    color: "linear-gradient(135deg, var(--gold), #886817)",
-    title: "Links",
-    body: () => `
-      <div class="row">
-        <span class="dot"></span>
-        <b>Important site</b>
-        <span class="row-right">open</span>
-      </div>
-
-      <div class="row">
-        <span class="dot" style="background:var(--blue);"></span>
-        <b>Project folder</b>
-        <span class="row-right">save</span>
-      </div>
-
-      <div class="row">
-        <span class="dot" style="background:var(--gold);"></span>
-        <b>Reference</b>
-        <span class="row-right">link</span>
-      </div>
     `,
   },
 };
 
-function createTool(type, title, x, y, data = {}) {
+function createTool(type = "custom", title = "Custom Tool", x, y, data = {}) {
   const template = templates[type] || templates.custom;
 
   const id =
@@ -266,7 +82,6 @@ function createTool(type, title, x, y, data = {}) {
   const tool = {
     id,
     type: template.type,
-    group: template.group,
     icon: template.icon,
     color: template.color,
     title: title || template.title,
@@ -315,9 +130,7 @@ function renderTools() {
 
     el.innerHTML = `
       <div class="card-head">
-        <div class="card-icon" style="background:${tool.color};">
-          ${tool.icon}
-        </div>
+        <div class="card-icon" style="background:${tool.color};">${tool.icon}</div>
 
         <div class="card-titlebox">
           <div class="card-title">${escapeHtml(tool.title)}</div>
@@ -327,9 +140,7 @@ function renderTools() {
         <button class="card-close" title="Delete">×</button>
       </div>
 
-      <div class="card-body">
-        ${template.body()}
-      </div>
+      <div class="card-body">${template.body()}</div>
 
       <div class="resize-handle"></div>
     `;
@@ -378,15 +189,13 @@ function renderTools() {
         const row = document.createElement("div");
 
         row.className = "task-row";
-        row.innerHTML = `
-          <span class="check">✓</span>
-          <span class="task-text">${escapeHtml(value)}</span>
-        `;
+        row.innerHTML = `<span class="check">✓</span><span class="task-text">${escapeHtml(value)}</span>`;
 
         row.addEventListener("click", () => row.classList.toggle("done"));
 
         list.appendChild(row);
         taskInput.value = "";
+        scheduleSave();
       });
     }
 
@@ -541,25 +350,13 @@ function deleteTool(id) {
   renderTools();
 }
 
-function addFromInput() {
-  const type = toolSelect.value;
-  const title = toolInput.value.trim() || templates[type]?.title || "Tool";
-
-  createTool(type, title);
-
-  toolInput.value = "";
-  toolInput.focus();
-}
-
 function applyCanvasTransform() {
   canvas.style.transform = `translate(${canvasX}px, ${canvasY}px) scale(${scale})`;
 
   canvasWrap.style.setProperty("--cx", canvasX + "px");
   canvasWrap.style.setProperty("--cy", canvasY + "px");
 
-  posChip.textContent = `x:${Math.round(-canvasX / scale)} y:${Math.round(
-    -canvasY / scale
-  )}`;
+  posChip.textContent = `x:${Math.round(-canvasX / scale)} y:${Math.round(-canvasY / scale)}`;
 }
 
 function zoom(delta) {
@@ -668,10 +465,7 @@ function showSaved() {
 
 function updateStatus() {
   countChip.textContent = `${tools.length} tool${tools.length === 1 ? "" : "s"}`;
-
-  posChip.textContent = `x:${Math.round(-canvasX / scale)} y:${Math.round(
-    -canvasY / scale
-  )}`;
+  posChip.textContent = `x:${Math.round(-canvasX / scale)} y:${Math.round(-canvasY / scale)}`;
 }
 
 function toggleTheme() {
@@ -731,16 +525,6 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
-addBtn.addEventListener("click", addFromInput);
-
-toolInput.addEventListener("keydown", (event) => {
-  if (event.key === "Enter") addFromInput();
-});
-
-document.querySelectorAll(".dock-btn[data-add]").forEach((btn) => {
-  btn.addEventListener("click", () => createTool(btn.dataset.add));
-});
-
 fitBtn.addEventListener("click", fitView);
 dockFit.addEventListener("click", fitView);
 resetViewBtn.addEventListener("click", fitView);
@@ -762,7 +546,6 @@ canvasWrap.addEventListener(
   "wheel",
   (event) => {
     event.preventDefault();
-
     zoom(event.deltaY > 0 ? -0.07 : 0.07);
   },
   { passive: false }
