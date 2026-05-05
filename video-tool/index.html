@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Video Tool</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="app-shell">
+    <header class="top-frame">
+      <div class="brand">
+        <h1>Video Tool</h1>
+        <p>This page is yours to edit later</p>
+      </div>
+
+      <div class="top-actions">
+        <a class="icon-btn page-back-btn" href="index.html" title="Back">←</a>
+        <button class="icon-btn" id="themeBtn" title="Theme">☾</button>
+      </div>
+    </header>
+
+    <aside class="side-rail left-rail">
+      <div class="rail-glow-line"></div>
+      <div class="rail-spacer"></div>
+    </aside>
+
+    <aside class="side-rail right-rail">
+      <div class="rail-glow-line"></div>
+      <div class="rail-spacer"></div>
+    </aside>
+
+    <main class="canvas-wrap">
+      <div class="blank-page-panel">
+        <h2>Video Tool Page</h2>
+        <p>This is a blank internal page. You can build anything here later.</p>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const themeBtn = document.getElementById("themeBtn");
+    const THEME_KEY = "personalised_tools_theme_v1";
+
+    function loadTheme() {
+      if (localStorage.getItem(THEME_KEY) === "light") {
+        document.body.classList.add("light");
+        themeBtn.textContent = "☀";
+      }
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle("light");
+      const isLight = document.body.classList.contains("light");
+      themeBtn.textContent = isLight ? "☀" : "☾";
+      localStorage.setItem(THEME_KEY, isLight ? "light" : "dark");
+    }
+
+    themeBtn.addEventListener("click", toggleTheme);
+    loadTheme();
+  </script>
+</body>
+</html>
