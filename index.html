@@ -6,6 +6,7 @@
   <title>Personalised Tools</title>
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
   <div class="app-shell">
     <header class="top-frame">
@@ -14,46 +15,7 @@
         <p>Your private web workspace</p>
       </div>
 
-      <div class="add-area">
-        <select class="tool-select" id="toolSelect">
-          <option value="custom">✦ Custom</option>
-          <option value="note">📝 Note</option>
-          <option value="tasks">✅ Tasks</option>
-          <option value="finance">💰 Finance</option>
-          <option value="business">🏢 Business</option>
-          <option value="habits">⚡ Habits</option>
-          <option value="stats">📊 Stats</option>
-          <option value="links">🔗 Links</option>
-        </select>
-
-        <input
-          class="tool-input"
-          id="toolInput"
-          placeholder="Name your tool and press Add..."
-          maxlength="44"
-        />
-
-        <button class="add-btn" id="addBtn">Add</button>
-      </div>
-
-      <nav class="filters" id="filters">
-        <button class="filter-btn active" data-filter="all">All</button>
-        <button class="filter-btn" data-filter="business">Business</button>
-        <button class="filter-btn" data-filter="personal">Personal</button>
-        <button class="filter-btn" data-filter="tasks">Tasks</button>
-        <button class="filter-btn" data-filter="note">Notes</button>
-        <button class="filter-btn" data-filter="finance">Finance</button>
-      </nav>
-
       <div class="top-actions">
-        <input class="search-input" id="searchInput" placeholder="Search tools..." />
-
-        <div class="mode-toggle">
-          <button class="mode-btn active" data-mode="all">All</button>
-          <button class="mode-btn" data-mode="business">Biz</button>
-          <button class="mode-btn" data-mode="personal">Life</button>
-        </div>
-
         <button class="icon-btn" id="fitBtn" title="Fit view">⊡</button>
         <button class="icon-btn" id="themeBtn" title="Theme">☾</button>
         <button class="icon-btn" id="lockBtn" title="Lock canvas">🔓</button>
@@ -61,12 +23,7 @@
     </header>
 
     <aside class="side-rail left-rail" id="leftRail">
-      <button class="rail-btn active" data-filter="all" title="All tools">⊞</button>
-      <button class="rail-btn" data-filter="business" title="Business">🏢</button>
-      <button class="rail-btn" data-filter="finance" title="Finance">💰</button>
-      <button class="rail-btn" data-filter="tasks" title="Tasks">✅</button>
-      <button class="rail-btn" data-filter="note" title="Notes">📝</button>
-      <button class="rail-btn" data-filter="personal" title="Personal">⚡</button>
+      <div class="rail-glow-line"></div>
       <div class="rail-spacer"></div>
       <button class="rail-btn" id="clearBtn" title="Clear all">🗑</button>
     </aside>
@@ -84,22 +41,14 @@
         <div class="empty-state" id="emptyState">
           <h2>Build your own tool space</h2>
           <p>
-            Add a <b>tool</b>, move it around, resize it, and arrange your private
-            workspace however you want.
+            This is your private moving whiteboard. Your tools will appear here later.
           </p>
         </div>
       </div>
     </main>
 
     <nav class="bottom-dock">
-      <button class="dock-btn" data-add="note"><b>📝</b>Note</button>
-      <button class="dock-btn" data-add="tasks"><b>✅</b>Tasks</button>
-      <button class="dock-btn" data-add="finance"><b>💰</b>Finance</button>
-      <div class="dock-sep"></div>
-      <button class="dock-btn" data-add="business"><b>🏢</b>Biz</button>
-      <button class="dock-btn" data-add="habits"><b>⚡</b>Habits</button>
-      <button class="dock-btn" data-add="links"><b>🔗</b>Links</button>
-      <div class="dock-sep"></div>
+      <span class="dock-label">Tool dock</span>
       <button class="dock-btn" id="dockFit"><b>⊡</b>Fit</button>
     </nav>
 
