@@ -10,7 +10,75 @@
 <body>
   <div class="app-shell">
     <header class="top-frame">
+      <div class="brand"><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Personalised Tools</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="app-shell">
+    <header class="top-frame">
       <div class="brand">
+        <h1>Personalised Tools</h1>
+        <p>Your private web workspace</p>
+      </div>
+
+      <div class="top-actions">
+        <button class="icon-btn" id="fitBtn" title="Fit view">⊡</button>
+        <button class="icon-btn" id="themeBtn" title="Theme">☾</button>
+        <button class="icon-btn" id="lockBtn" title="Lock canvas">🔓</button>
+      </div>
+    </header>
+
+    <aside class="side-rail left-rail" id="leftRail">
+      <div class="rail-glow-line"></div>
+      <div class="rail-spacer"></div>
+      <button class="rail-btn" id="clearBtn" title="Clear all">🗑</button>
+    </aside>
+
+    <aside class="side-rail right-rail">
+      <a class="youtube-clock-icon" href="video-tool/index.html" title="Open Video Tool">
+        <svg viewBox="0 0 90 64" aria-hidden="true">
+          <rect class="yt-body" x="18" y="22" width="58" height="34" rx="13"></rect>
+          <path class="yt-play" d="M42 31 L42 47 L56 39 Z"></path>
+
+          <circle class="clock-body" cx="24" cy="20" r="13"></circle>
+          <line class="clock-hand" x1="24" y1="20" x2="24" y2="12"></line>
+          <line class="clock-hand" x1="24" y1="20" x2="31" y2="23"></line>
+        </svg>
+      </a>
+
+      <div class="rail-glow-line"></div>
+      <div class="rail-spacer"></div>
+    </aside>
+
+    <main class="canvas-wrap" id="canvasWrap">
+      <div class="canvas" id="canvas">
+        <div class="empty-state" id="emptyState"></div>
+      </div>
+    </main>
+
+    <nav class="bottom-dock">
+      <span class="dock-label">Tool dock</span>
+      <button class="dock-btn" id="dockFit"><b>⊡</b>Fit</button>
+    </nav>
+
+    <div class="status">
+      <div class="chip" id="posChip">x:0 y:0</div>
+      <div class="chip" id="countChip">0 tools</div>
+      <div class="chip" id="saveChip">Saved ✓</div>
+    </div>
+
+    <div class="toast-wrap" id="toastWrap"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
         <h1>Personalised Tools</h1>
         <p>Your private web workspace</p>
       </div>
