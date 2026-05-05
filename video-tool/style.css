@@ -1,0 +1,25 @@
+.page-back-btn {
+  text-decoration: none;
+}
+
+.blank-page-panel {
+  width: min(720px, 90%);
+  min-height: 320px;
+  margin: 40px auto;
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  background: var(--panel);
+  backdrop-filter: blur(18px);
+  box-shadow: var(--glow);
+}
+
+.blank-page-panel h2 {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.blank-page-panel p {
+  color: var(--muted);
+  line-height: 1.6;
+}
