@@ -776,3 +776,90 @@ body.light .chip {
     width: 280px;
   }
 }
+/* Bigger smoother side rails */
+:root {
+  --rail-w: 44px;
+}
+
+.side-rail {
+  width: var(--rail-w);
+  padding: 12px 6px;
+  will-change: transform, width;
+  transition:
+    width 0.24s ease,
+    transform 0.24s ease,
+    border-color 0.24s ease,
+    box-shadow 0.24s ease,
+    background 0.24s ease;
+}
+
+.left-rail:hover,
+.right-rail:hover {
+  width: 52px;
+}
+
+.left-rail:hover {
+  transform: translateX(4px);
+}
+
+.right-rail:hover {
+  transform: translateX(-4px);
+}
+
+.rail-btn {
+  width: 30px;
+  height: 30px;
+  font-size: 14px;
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.rail-btn:hover {
+  transform: scale(1.08);
+}
+
+/* Remove center whiteboard text/card */
+.empty-state {
+  display: none !important;
+}
+
+/* Smooth canvas/cards */
+.canvas {
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+
+.tool-card {
+  will-change: transform, left, top;
+}
+
+/* Smoother, lighter star background */
+.canvas-wrap::before {
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,0.6) 1px, transparent 1.8px),
+    radial-gradient(circle, rgba(143,109,255,0.5) 1px, transparent 2px);
+  background-size: 180px 180px, 310px 310px;
+  background-position: 0 0, 90px 70px;
+  opacity: 0.36;
+  filter: none;
+}
+
+.canvas-wrap::after {
+  background-image:
+    radial-gradient(circle, rgba(97,168,255,0.45) 1px, transparent 2px),
+    radial-gradient(circle, rgba(216,177,76,0.35) 1px, transparent 2px);
+  background-size: 380px 380px, 520px 520px;
+  background-position: 120px 60px, 200px 180px;
+  opacity: 0.22;
+  filter: none;
+}
+
+/* Use smaller background surface for performance */
+.canvas-wrap::before,
+.canvas-wrap::after {
+  inset: -120%;
+  will-change: transform;
+}
