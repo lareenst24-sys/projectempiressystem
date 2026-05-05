@@ -35,7 +35,17 @@ let dragOffsetY = 0;
 
 let zCounter = 20;
 let locked = false;
-let saveTimer;
+let saveTimer = null;
+
+/* Smooth panning */
+let panFrame = null;
+let nextPanX = 0;
+let nextPanY = 0;
+
+/* Smooth card dragging */
+let dragFrame = null;
+let nextDragX = 0;
+let nextDragY = 0;
 
 const templates = {
   custom: {
@@ -238,11 +248,16 @@ function cardDragMove(event) {
 
   const rect = canvasWrap.getBoundingClientRect();
 
-  const x = (event.clientX - rect.left - canvasX) / scale - dragOffsetX;
-  const y = (event.clientY - rect.top - canvasY) / scale - dragOffsetY;
+  nextDragX = (event.clientX - rect.left - canvasX) / scale - dragOffsetX;
+  nextDragY = (event.clientY - rect.top - canvasY) / scale - dragOffsetY;
 
-  el.style.left = x + "px";
-  el.style.top = y + "px";
+  if (dragFrame) return;
+
+  dragFrame = requestAnimationFrame(() => {
+    el.style.left = nextDragX + "px";
+    el.style.top = nextDragY + "px";
+    dragFrame = null;
+  });
 }
 
 function stopCardDrag() {
@@ -297,11 +312,16 @@ function cardTouchMove(event) {
 
   const rect = canvasWrap.getBoundingClientRect();
 
-  const x = (touch.clientX - rect.left - canvasX) / scale - dragOffsetX;
-  const y = (touch.clientY - rect.top - canvasY) / scale - dragOffsetY;
+  nextDragX = (touch.clientX - rect.left - canvasX) / scale - dragOffsetX;
+  nextDragY = (touch.clientY - rect.top - canvasY) / scale - dragOffsetY;
 
-  el.style.left = x + "px";
-  el.style.top = y + "px";
+  if (dragFrame) return;
+
+  dragFrame = requestAnimationFrame(() => {
+    el.style.left = nextDragX + "px";
+    el.style.top = nextDragY + "px";
+    dragFrame = null;
+  });
 }
 
 function stopCardTouchDrag() {
@@ -322,9 +342,21 @@ function startResize(event, el) {
   const startW = el.offsetWidth;
   const startH = el.offsetHeight;
 
+  let resizeFrame = null;
+  let nextW = startW;
+  let nextH = startH;
+
   function move(e) {
-    el.style.width = Math.max(220, startW + (e.clientX - startX) / scale) + "px";
-    el.style.minHeight = Math.max(130, startH + (e.clientY - startY) / scale) + "px";
+    nextW = Math.max(220, startW + (e.clientX - startX) / scale);
+    nextH = Math.max(130, startH + (e.clientY - startY) / scale);
+
+    if (resizeFrame) return;
+
+    resizeFrame = requestAnimationFrame(() => {
+      el.style.width = nextW + "px";
+      el.style.minHeight = nextH + "px";
+      resizeFrame = null;
+    });
   }
 
   function up() {
@@ -351,7 +383,7 @@ function deleteTool(id) {
 }
 
 function applyCanvasTransform() {
-  canvas.style.transform = `translate(${canvasX}px, ${canvasY}px) scale(${scale})`;
+  canvas.style.transform = `translate3d(${canvasX}px, ${canvasY}px, 0) scale(${scale})`;
 
   canvasWrap.style.setProperty("--cx", canvasX + "px");
   canvasWrap.style.setProperty("--cy", canvasY + "px");
@@ -404,10 +436,17 @@ function startPan(event) {
 function panMove(event) {
   if (!isPanning) return;
 
-  canvasX = event.clientX - panStartX;
-  canvasY = event.clientY - panStartY;
+  nextPanX = event.clientX - panStartX;
+  nextPanY = event.clientY - panStartY;
 
-  applyCanvasTransform();
+  if (panFrame) return;
+
+  panFrame = requestAnimationFrame(() => {
+    canvasX = nextPanX;
+    canvasY = nextPanY;
+    applyCanvasTransform();
+    panFrame = null;
+  });
 }
 
 function stopPan() {
