@@ -10,7 +10,6 @@
   --panel: rgba(15, 9, 31, 0.86);
   --panel2: rgba(22, 14, 44, 0.92);
   --card: rgba(18, 12, 35, 0.95);
-  --card2: rgba(25, 17, 48, 0.95);
   --line: rgba(145, 112, 255, 0.22);
   --line2: rgba(145, 112, 255, 0.48);
   --text: #f8f5ff;
@@ -35,7 +34,6 @@ body.light {
   --panel: rgba(255, 255, 255, 0.86);
   --panel2: rgba(255, 255, 255, 0.94);
   --card: rgba(255, 255, 255, 0.96);
-  --card2: rgba(247, 244, 255, 0.96);
   --line: rgba(121, 84, 230, 0.22);
   --line2: rgba(121, 84, 230, 0.48);
   --text: #151020;
@@ -87,6 +85,8 @@ body.light .app-shell {
   background: linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0.25));
 }
 
+/* TOP FRAME */
+
 .top-frame {
   position: absolute;
   top: 10px;
@@ -95,21 +95,34 @@ body.light .app-shell {
   height: var(--top-h);
   z-index: 50;
   display: grid;
-  grid-template-columns: auto auto 1fr auto;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 10px;
-  padding: 10px 14px;
+  padding: 10px 18px;
   border: 1px solid var(--line);
   border-radius: 23px;
   background: var(--panel);
   backdrop-filter: blur(20px);
   box-shadow: var(--glow);
+  transition:
+    transform 0.22s ease,
+    border-color 0.22s ease,
+    box-shadow 0.22s ease,
+    background 0.22s ease;
+}
+
+.top-frame:hover {
+  transform: translateY(-1px);
+  border-color: rgba(182, 157, 255, 0.5);
+  box-shadow:
+    0 0 34px rgba(143, 109, 255, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .brand {
   min-width: 198px;
-  padding-right: 12px;
-  border-right: 1px solid var(--line);
+  padding-right: 0;
+  border-right: none;
 }
 
 .brand h1 {
@@ -124,133 +137,11 @@ body.light .app-shell {
   font-size: 11px;
 }
 
-.add-area {
-  height: 44px;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 5px;
-  border: 1px solid rgba(216, 177, 76, 0.32);
-  border-radius: 16px;
-  background: rgba(216, 177, 76, 0.08);
-}
-
-.tool-select,
-.tool-input,
-.search-input {
-  height: 34px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  outline: none;
-  background: rgba(255, 255, 255, 0.045);
-  color: var(--text);
-  font-size: 12px;
-}
-
-.tool-select {
-  width: 120px;
-  padding: 0 8px;
-  color: var(--muted);
-}
-
-.tool-select option {
-  background: #120c24;
-  color: white;
-}
-
-.tool-input {
-  width: 210px;
-  padding: 0 10px;
-}
-
-.tool-input::placeholder,
-.search-input::placeholder {
-  color: var(--muted2);
-}
-
-.add-btn {
-  height: 34px;
-  padding: 0 15px;
-  border-radius: 11px;
-  background: linear-gradient(135deg, var(--gold), #9b7929);
-  color: #100918;
-  font-weight: 900;
-  font-size: 12px;
-  transition: 0.16s ease;
-}
-
-.add-btn:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.08);
-}
-
-.filters {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  min-width: 0;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.filters::-webkit-scrollbar {
-  display: none;
-}
-
-.filter-btn {
-  height: 34px;
-  padding: 0 12px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.035);
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 800;
-  white-space: nowrap;
-  transition: 0.15s ease;
-}
-
-.filter-btn:hover,
-.filter-btn.active {
-  color: var(--text);
-  border-color: var(--line2);
-  background: rgba(143, 109, 255, 0.16);
-}
-
 .top-actions {
+  margin-left: auto;
   display: flex;
   align-items: center;
   gap: 7px;
-}
-
-.search-input {
-  width: 185px;
-  padding: 0 10px;
-}
-
-.mode-toggle {
-  height: 36px;
-  display: flex;
-  padding: 3px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.04);
-}
-
-.mode-btn {
-  min-width: 76px;
-  border-radius: 999px;
-  background: transparent;
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 900;
-}
-
-.mode-btn.active {
-  color: white;
-  background: linear-gradient(135deg, var(--purple), #5a38be);
-  box-shadow: 0 0 22px rgba(143, 109, 255, 0.2);
 }
 
 .icon-btn {
@@ -273,6 +164,8 @@ body.light .app-shell {
   background: rgba(143, 109, 255, 0.13);
 }
 
+/* SIDE RAILS */
+
 .side-rail {
   position: absolute;
   top: 92px;
@@ -288,6 +181,11 @@ body.light .app-shell {
   background: rgba(13, 8, 27, 0.62);
   backdrop-filter: blur(16px);
   box-shadow: var(--glow);
+  transition:
+    transform 0.22s ease,
+    border-color 0.22s ease,
+    box-shadow 0.22s ease,
+    background 0.22s ease;
 }
 
 body.light .side-rail {
@@ -302,6 +200,34 @@ body.light .side-rail {
 .right-rail {
   right: 14px;
   border-radius: 12px 18px 18px 12px;
+}
+
+.left-rail:hover {
+  transform: translateX(3px);
+  border-color: rgba(182, 157, 255, 0.45);
+  box-shadow: 0 0 30px rgba(143, 109, 255, 0.18);
+}
+
+.right-rail:hover {
+  transform: translateX(-3px);
+  border-color: rgba(182, 157, 255, 0.45);
+  box-shadow: 0 0 30px rgba(143, 109, 255, 0.18);
+}
+
+.rail-glow-line {
+  width: 8px;
+  height: 45%;
+  margin-top: 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(182, 157, 255, 0.22);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(143, 109, 255, 0.18),
+      rgba(97, 168, 255, 0.06),
+      rgba(216, 177, 76, 0.08)
+    );
+  box-shadow: inset 0 0 18px rgba(143, 109, 255, 0.08);
 }
 
 .rail-btn {
@@ -327,6 +253,8 @@ body.light .side-rail {
 .rail-spacer {
   flex: 1;
 }
+
+/* CANVAS */
 
 .canvas-wrap {
   position: absolute;
@@ -416,9 +344,7 @@ body.light .empty-state {
   line-height: 1.6;
 }
 
-.empty-state b {
-  color: var(--gold);
-}
+/* TOOL CARDS */
 
 .tool-card {
   position: absolute;
@@ -442,11 +368,6 @@ body.light .empty-state {
   z-index: 1000 !important;
   border-color: var(--purple2);
   box-shadow: 0 28px 100px rgba(0,0,0,0.55), 0 0 42px rgba(143,109,255,0.24);
-}
-
-.tool-card.dimmed {
-  opacity: 0.16;
-  pointer-events: none;
 }
 
 .card-head {
@@ -694,6 +615,8 @@ body.light .empty-state {
   border-radius: 999px;
 }
 
+/* BOTTOM DOCK */
+
 .bottom-dock {
   position: absolute;
   left: 50%;
@@ -701,15 +624,35 @@ body.light .empty-state {
   transform: translateX(-50%);
   z-index: 60;
   height: var(--dock-h);
+  min-width: 220px;
   display: flex;
   align-items: center;
-  gap: 5px;
-  padding: 6px 8px;
+  justify-content: center;
+  gap: 10px;
+  padding: 6px 14px;
   border: 1px solid var(--line);
   border-radius: 999px;
   background: var(--panel);
   backdrop-filter: blur(20px);
   box-shadow: var(--glow);
+  transition:
+    transform 0.22s ease,
+    border-color 0.22s ease,
+    box-shadow 0.22s ease,
+    background 0.22s ease;
+}
+
+.bottom-dock:hover {
+  transform: translateX(-50%) translateY(-3px);
+  border-color: rgba(182, 157, 255, 0.45);
+  box-shadow: 0 0 34px rgba(143, 109, 255, 0.2);
+}
+
+.dock-label {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
 }
 
 .dock-btn {
@@ -740,12 +683,7 @@ body.light .empty-state {
   color: var(--text);
 }
 
-.dock-sep {
-  width: 1px;
-  height: 28px;
-  background: var(--line);
-  margin: 0 4px;
-}
+/* STATUS */
 
 .status {
   position: absolute;
@@ -807,98 +745,34 @@ body.light .chip {
   }
 
   .top-frame {
-    height: 122px;
-    grid-template-columns: 1fr auto;
-    grid-template-rows: auto auto;
-    align-items: center;
+    height: 82px;
   }
 
   .brand {
     min-width: 0;
   }
 
-  .add-area {
-    grid-column: 1 / -1;
-    width: 100%;
-  }
-
-  .tool-input {
-    width: 100%;
-  }
-
-  .filters,
-  .search-input,
   .right-rail,
   .status {
     display: none;
   }
 
   .left-rail {
-    top: 144px;
+    top: 104px;
   }
 
   .canvas-wrap {
-    top: 144px;
+    top: 104px;
     left: 58px;
     right: 12px;
     bottom: 82px;
   }
 
   .bottom-dock {
-    width: calc(100% - 24px);
-    overflow-x: auto;
-    justify-content: flex-start;
+    min-width: 190px;
   }
 
   .tool-card {
     width: 280px;
   }
-}
-
-/* CLEAN TOP BAR: remove all tool boxes for now */
-.add-area,
-.filters,
-.search-input,
-.mode-toggle {
-  display: none !important;
-}
-
-/* Make top frame only show title + small controls */
-.top-frame {
-  grid-template-columns: auto 1fr auto !important;
-}
-
-.brand {
-  border-right: none;
-}
-
-/* Keep only right side buttons: fit, theme, lock */
-.top-actions {
-  margin-left: auto;
-}
-
-/* Make the top frame cleaner */
-.top-frame {
-  padding-left: 18px;
-  padding-right: 18px;
-}
-
-/* Remove dock tool buttons for now */
-.dock-btn[data-add],
-.dock-sep {
-  display: none !important;
-}
-
-/* Keep bottom dock as placeholder design only */
-.bottom-dock {
-  min-width: 220px;
-  justify-content: center;
-}
-
-.bottom-dock::before {
-  content: "Tool dock";
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
 }
