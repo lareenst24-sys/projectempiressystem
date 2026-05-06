@@ -350,6 +350,7 @@
     bind(card);
 
     const textarea = card.querySelector("textarea");
+
     if (textarea && block.text) {
       textarea.value = block.text;
     }
@@ -808,6 +809,14 @@
   });
 
   document.addEventListener("click", (event) => {
+    const dockBtn = event.target.closest("[data-create-block]");
+
+    if (dockBtn) {
+      createManualBlock(dockBtn.dataset.createBlock);
+      closeContextMenu();
+      return;
+    }
+
     const actionBtn = event.target.closest(".block-menu-item");
 
     if (!actionBtn) {
@@ -833,39 +842,15 @@
     }
 
     if (action === "add-note") {
-      create({
-        type: "notes",
-        title: "New Note",
-        x: contextPoint.x,
-        y: contextPoint.y,
-        toolset: "manual",
-      });
-
-      saveToolset("manual");
+      createManualBlock("notes", contextPoint);
     }
 
     if (action === "add-automation") {
-      create({
-        type: "automation",
-        title: "Automation Flow",
-        x: contextPoint.x,
-        y: contextPoint.y,
-        toolset: "manual",
-      });
-
-      saveToolset("manual");
+      createManualBlock("automation", contextPoint);
     }
 
     if (action === "add-links") {
-      create({
-        type: "links",
-        title: "Tool Links",
-        x: contextPoint.x,
-        y: contextPoint.y,
-        toolset: "manual",
-      });
-
-      saveToolset("manual");
+      createManualBlock("links", contextPoint);
     }
 
     closeContextMenu();
@@ -877,110 +862,92 @@
     }
   });
 
-/* =========================
-   TOOL DOCK QUICK BLOCK BUTTONS
-========================= */
+  /* =========================
+     TOOL DOCK QUICK BLOCK BUTTONS
+  ========================= */
 
-function createManualBlock(type) {
-  const wrap = getCanvasWrap();
-  const rect = wrap.getBoundingClientRect();
+  function createManualBlock(type, point = null) {
+    const wrap = getCanvasWrap();
+    const rect = wrap.getBoundingClientRect();
 
-  const scale = getScale();
-  const canvasX = getCanvasX();
-  const canvasY = getCanvasY();
+    const scale = getScale();
+    const canvasX = getCanvasX();
+    const canvasY = getCanvasY();
 
-  const x = (rect.width / 2 - canvasX) / scale - 150 + Math.random() * 50;
-  const y = (rect.height / 2 - canvasY) / scale - 90 + Math.random() * 50;
+    const x =
+      point?.x ??
+      (rect.width / 2 - canvasX) / scale - 150 + Math.random() * 50;
 
-  const titleMap = {
-    notes: "New Note",
-    automation: "Automation Flow",
-    links: "Tool Links",
-  };
+    const y =
+      point?.y ??
+      (rect.height / 2 - canvasY) / scale - 90 + Math.random() * 50;
 
-  create({
-    type,
-    title: titleMap[type] || "New Block",
-    x,
-    y,
-    toolset: "manual",
-  });
+    const titleMap = {
+      notes: "New Note",
+      automation: "Automation Flow",
+      links: "Tool Links",
+    };
 
-  saveToolset("manual");
-  toast(`${titleMap[type] || "Block"} created`);
-}
+    create({
+      type,
+      title: titleMap[type] || "New Block",
+      x,
+      y,
+      toolset: "manual",
+    });
 
-function injectDockBlockButtons() {
-  const dock = document.querySelector(".bottom-dock");
+    saveToolset("manual");
+    toast(`${titleMap[type] || "Block"} created`);
+  }
 
-  if (!dock) return;
+  function injectDockBlockButtons() {
+    const dock = document.querySelector(".bottom-dock");
 
-  // Prevent duplicate buttons
-  if (dock.querySelector("[data-create-block]")) return;
+    if (!dock) return;
 
-  const fitBtn = document.getElementById("dockFit");
+    if (dock.querySelector("[data-create-block]")) return;
 
-  const buttons = [
-    {
-      type: "notes",
-      icon: "📝",
-      label: "Note",
-    },
-    {
-      type: "automation",
-      icon: "⚙️",
-      label: "Auto",
-    },
-    {
-      type: "links",
-      icon: "🔗",
-      label: "Links",
-    },
-  ];
+    const fitBtn = document.getElementById("dockFit");
 
-  buttons.forEach((item) => {
-    const btn = document.createElement("button");
+    const buttons = [
+      {
+        type: "notes",
+        icon: "📝",
+        label: "Note",
+      },
+      {
+        type: "automation",
+        icon: "⚙️",
+        label: "Auto",
+      },
+      {
+        type: "links",
+        icon: "🔗",
+        label: "Links",
+      },
+    ];
 
-    btn.className = "dock-btn";
-    btn.type = "button";
-    btn.dataset.createBlock = item.type;
-    btn.innerHTML = `<b>${item.icon}</b>${item.label}`;
+    buttons.forEach((item) => {
+      const btn = document.createElement("button");
 
-    if (fitBtn) {
-      dock.insertBefore(btn, fitBtn);
-    } else {
-      dock.appendChild(btn);
-    }
-  });
-}
+      btn.className = "dock-btn";
+      btn.type = "button";
+      btn.dataset.createBlock = item.type;
+      btn.innerHTML = `<b>${item.icon}</b>${item.label}`;
 
-document.addEventListener("click", (event) => {
-  const btn = event.target.closest("[data-create-block]");
+      if (fitBtn) {
+        dock.insertBefore(btn, fitBtn);
+      } else {
+        dock.appendChild(btn);
+      }
+    });
+  }
 
-  if (!btn) return;
+  injectDockBlockButtons();
 
-  createManualBlock(btn.dataset.createBlock);
-});
-
-injectDockBlockButtons();
-
-window.BlockSystem = {
-  create,
-  createManualBlock,
-  toggleToolset,
-  loadToolset,
-  removeToolset,
-  saveToolset,
-  isToolsetOpen,
-  clearAll,
-  count,
-  duplicateBlock,
-  renameBlock,
-  bringToFront,
-};
-})();
   window.BlockSystem = {
     create,
+    createManualBlock,
     toggleToolset,
     loadToolset,
     removeToolset,
