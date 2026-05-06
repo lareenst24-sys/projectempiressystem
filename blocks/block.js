@@ -10,6 +10,10 @@
   let zIndex = 100;
   const openToolsets = new Set();
 
+  let contextMenu = null;
+  let contextTarget = null;
+  let contextPoint = { x: 120, y: 120 };
+
   function getMain() {
     return window.MainApp || {};
   }
@@ -18,8 +22,20 @@
     return getMain().canvas || document.getElementById("canvas");
   }
 
+  function getCanvasWrap() {
+    return getMain().canvasWrap || document.getElementById("canvasWrap");
+  }
+
   function getScale() {
     return getMain().scale || 1;
+  }
+
+  function getCanvasX() {
+    return getMain().canvasX || 0;
+  }
+
+  function getCanvasY() {
+    return getMain().canvasY || 0;
   }
 
   function isLocked() {
@@ -108,10 +124,26 @@
         color: "linear-gradient(135deg, var(--gold), #9b7929)",
         title: "Upload Checklist",
         body: `
-          <div class="block-row"><span class="block-dot"></span><b>Title ready</b><span class="block-right">todo</span></div>
-          <div class="block-row"><span class="block-dot" style="background:var(--gold);"></span><b>Thumbnail ready</b><span class="block-right">todo</span></div>
-          <div class="block-row"><span class="block-dot" style="background:var(--blue);"></span><b>Description ready</b><span class="block-right">todo</span></div>
-          <div class="block-row"><span class="block-dot" style="background:var(--green);"></span><b>Tags ready</b><span class="block-right">todo</span></div>
+          <div class="block-row">
+            <span class="block-dot"></span>
+            <b>Title ready</b>
+            <span class="block-right">todo</span>
+          </div>
+          <div class="block-row">
+            <span class="block-dot" style="background:var(--gold);"></span>
+            <b>Thumbnail ready</b>
+            <span class="block-right">todo</span>
+          </div>
+          <div class="block-row">
+            <span class="block-dot" style="background:var(--blue);"></span>
+            <b>Description ready</b>
+            <span class="block-right">todo</span>
+          </div>
+          <div class="block-row">
+            <span class="block-dot" style="background:var(--green);"></span>
+            <b>Tags ready</b>
+            <span class="block-right">todo</span>
+          </div>
         `,
       },
 
@@ -125,10 +157,24 @@
             <a class="block-action-btn red" href="https://studio.youtube.com/" target="_blank" rel="noopener">Open Studio</a>
             <a class="block-action-btn" href="https://www.youtube.com/" target="_blank" rel="noopener">Open YouTube</a>
           </div>
+
           <div style="height:12px;"></div>
-          <div class="block-row"><span class="block-dot" style="background:#ff3545;"></span><b>Dashboard</b><span class="block-right">external</span></div>
-          <div class="block-row"><span class="block-dot" style="background:var(--gold);"></span><b>Upload planner</b><span class="block-right">later</span></div>
-          <div class="block-row"><span class="block-dot" style="background:var(--blue);"></span><b>Editor notes</b><span class="block-right">later</span></div>
+
+          <div class="block-row">
+            <span class="block-dot" style="background:#ff3545;"></span>
+            <b>Dashboard</b>
+            <span class="block-right">external</span>
+          </div>
+          <div class="block-row">
+            <span class="block-dot" style="background:var(--gold);"></span>
+            <b>Upload planner</b>
+            <span class="block-right">later</span>
+          </div>
+          <div class="block-row">
+            <span class="block-dot" style="background:var(--blue);"></span>
+            <b>Editor notes</b>
+            <span class="block-right">later</span>
+          </div>
         `,
       },
 
@@ -141,10 +187,24 @@
           <div class="block-actions">
             <a class="block-action-btn gold" href="https://chatgpt.com/" target="_blank" rel="noopener">Open ChatGPT</a>
           </div>
+
           <div style="height:12px;"></div>
-          <div class="block-row"><span class="block-dot" style="background:var(--green);"></span><b>Generate title ideas</b><span class="block-right">prompt</span></div>
-          <div class="block-row"><span class="block-dot" style="background:var(--purple);"></span><b>Rewrite hook</b><span class="block-right">prompt</span></div>
-          <div class="block-row"><span class="block-dot" style="background:var(--gold);"></span><b>Create description</b><span class="block-right">prompt</span></div>
+
+          <div class="block-row">
+            <span class="block-dot" style="background:var(--green);"></span>
+            <b>Generate title ideas</b>
+            <span class="block-right">prompt</span>
+          </div>
+          <div class="block-row">
+            <span class="block-dot" style="background:var(--purple);"></span>
+            <b>Rewrite hook</b>
+            <span class="block-right">prompt</span>
+          </div>
+          <div class="block-row">
+            <span class="block-dot" style="background:var(--gold);"></span>
+            <b>Create description</b>
+            <span class="block-right">prompt</span>
+          </div>
         `,
       },
 
@@ -168,10 +228,61 @@
         title: "Stats",
         body: `
           <div class="block-stat-grid">
-            <div class="block-stat"><b style="color:var(--gold);">0</b><span>Videos</span><small>saved</small></div>
-            <div class="block-stat"><b style="color:var(--blue);">0</b><span>Ideas</span><small>planned</small></div>
-            <div class="block-stat"><b style="color:var(--purple2);">0</b><span>Scripts</span><small>drafted</small></div>
-            <div class="block-stat"><b>0</b><span>Uploads</span><small>ready</small></div>
+            <div class="block-stat">
+              <b style="color:var(--gold);">0</b>
+              <span>Videos</span>
+              <small>saved</small>
+            </div>
+            <div class="block-stat">
+              <b style="color:var(--blue);">0</b>
+              <span>Ideas</span>
+              <small>planned</small>
+            </div>
+            <div class="block-stat">
+              <b style="color:var(--purple2);">0</b>
+              <span>Scripts</span>
+              <small>drafted</small>
+            </div>
+            <div class="block-stat">
+              <b>0</b>
+              <span>Uploads</span>
+              <small>ready</small>
+            </div>
+          </div>
+        `,
+      },
+
+      automation: {
+        icon: "⚙️",
+        typeLabel: "Automation",
+        color: "linear-gradient(135deg, var(--gold), #9b7929)",
+        title: "Automation Flow",
+        body: `
+          <div class="block-automation-box">
+            <div class="block-automation-step">
+              <div class="block-automation-num">1</div>
+              <b>Send prompt to ChatGPT</b>
+              <span>manual</span>
+            </div>
+
+            <div class="block-automation-step">
+              <div class="block-automation-num">2</div>
+              <b>Get script result</b>
+              <span>manual</span>
+            </div>
+
+            <div class="block-automation-step">
+              <div class="block-automation-num">3</div>
+              <b>Send to video tool</b>
+              <span>later</span>
+            </div>
+
+            <textarea class="block-automation-note" placeholder="Describe your automation idea here..."></textarea>
+
+            <div class="block-actions">
+              <a class="block-action-btn gold" href="https://chatgpt.com/" target="_blank" rel="noopener">Open ChatGPT</a>
+              <button class="block-action-btn" type="button">Connect Later</button>
+            </div>
           </div>
         `,
       },
@@ -204,6 +315,10 @@
 
     if (block.toolset) {
       card.dataset.toolset = block.toolset;
+    }
+
+    if (block.automation) {
+      card.dataset.automation = block.automation;
     }
 
     card.style.left = (block.x ?? 120) + "px";
@@ -239,6 +354,14 @@
       textarea.value = block.text;
     }
 
+    if (block.automation) {
+      const automationArea = card.querySelector(".block-automation-note, .block-note");
+
+      if (automationArea) {
+        automationArea.value = block.automation;
+      }
+    }
+
     updateStatus();
 
     return card;
@@ -266,6 +389,10 @@
 
     card.querySelectorAll("textarea").forEach((textarea) => {
       textarea.addEventListener("input", () => {
+        if (textarea.classList.contains("block-automation-note")) {
+          card.dataset.automation = textarea.value;
+        }
+
         const toolset = card.dataset.toolset;
         if (toolset) saveToolset(toolset);
       });
@@ -414,6 +541,7 @@
       type: card.dataset.type,
       title: card.dataset.title,
       toolset: card.dataset.toolset,
+      automation: card.dataset.automation || "",
       x: parseFloat(card.style.left) || 0,
       y: parseFloat(card.style.top) || 0,
       w: parseFloat(card.style.width) || 300,
@@ -493,6 +621,262 @@
     updateStatus();
   }
 
+  /* =========================
+     CONTEXT MENU
+  ========================= */
+
+  function ensureContextMenu() {
+    if (contextMenu) return contextMenu;
+
+    contextMenu = document.createElement("div");
+    contextMenu.className = "block-context-menu";
+    contextMenu.id = "blockContextMenu";
+
+    document.body.appendChild(contextMenu);
+
+    return contextMenu;
+  }
+
+  function openContextMenu(event, mode, target = null) {
+    event.preventDefault();
+
+    ensureContextMenu();
+
+    contextTarget = target;
+    contextPoint = getCanvasPointFromEvent(event);
+
+    if (mode === "block") {
+      contextMenu.innerHTML = `
+        <button class="block-menu-item" data-action="rename">✏️ Rename block</button>
+        <button class="block-menu-item" data-action="automation">⚙️ Edit automation idea</button>
+        <button class="block-menu-item" data-action="duplicate">⧉ Duplicate block</button>
+        <button class="block-menu-item" data-action="front">⬆️ Bring to front</button>
+        <div class="block-menu-sep"></div>
+        <button class="block-menu-item danger" data-action="delete">🗑 Delete block</button>
+      `;
+    } else {
+      contextMenu.innerHTML = `
+        <button class="block-menu-item" data-action="add-note">📝 Create Note block</button>
+        <button class="block-menu-item" data-action="add-automation">⚙️ Create Automation block</button>
+        <button class="block-menu-item" data-action="add-links">🔗 Create Links block</button>
+      `;
+    }
+
+    const menuW = 210;
+    const menuH = mode === "block" ? 230 : 145;
+
+    contextMenu.style.left = Math.min(event.clientX, window.innerWidth - menuW - 12) + "px";
+    contextMenu.style.top = Math.min(event.clientY, window.innerHeight - menuH - 12) + "px";
+
+    contextMenu.classList.add("open");
+  }
+
+  function closeContextMenu() {
+    if (!contextMenu) return;
+    contextMenu.classList.remove("open");
+  }
+
+  function getCanvasPointFromEvent(event) {
+    const wrap = getCanvasWrap();
+    const rect = wrap.getBoundingClientRect();
+
+    const scale = getScale();
+    const canvasX = getCanvasX();
+    const canvasY = getCanvasY();
+
+    return {
+      x: (event.clientX - rect.left - canvasX) / scale,
+      y: (event.clientY - rect.top - canvasY) / scale,
+    };
+  }
+
+  function renameBlock(card) {
+    if (!card) return;
+
+    const oldTitle = card.dataset.title || "Block";
+    const nextTitle = prompt("New block name:", oldTitle);
+
+    if (!nextTitle || !nextTitle.trim()) return;
+
+    const cleanTitle = nextTitle.trim();
+
+    card.dataset.title = cleanTitle;
+
+    const titleEl = card.querySelector(".block-title");
+
+    if (titleEl) {
+      titleEl.textContent = cleanTitle;
+    }
+
+    const toolset = card.dataset.toolset;
+    if (toolset) saveToolset(toolset);
+
+    toast("Block renamed");
+  }
+
+  function duplicateBlock(card) {
+    if (!card) return;
+
+    const data = serializeCard(card);
+
+    const copy = create({
+      ...data,
+      id: safeId(),
+      title: data.title + " Copy",
+      x: data.x + 28,
+      y: data.y + 28,
+      z: ++zIndex,
+    });
+
+    if (data.toolset) {
+      copy.dataset.toolset = data.toolset;
+      saveToolset(data.toolset);
+    }
+
+    toast("Block duplicated");
+  }
+
+  function bringToFront(card) {
+    if (!card) return;
+
+    card.style.zIndex = ++zIndex;
+
+    const toolset = card.dataset.toolset;
+    if (toolset) saveToolset(toolset);
+
+    toast("Moved to front");
+  }
+
+  function editAutomationIdea(card) {
+    if (!card) return;
+
+    const current = card.dataset.automation || "";
+    const idea = prompt(
+      "Automation idea example: ChatGPT writes script → send to InVideo → generate video",
+      current
+    );
+
+    if (idea === null) return;
+
+    card.dataset.automation = idea;
+
+    let note = card.querySelector(".block-automation-note, .block-note");
+
+    if (!note) {
+      const body = card.querySelector(".block-body");
+
+      if (body) {
+        const textarea = document.createElement("textarea");
+        textarea.className = "block-automation-note";
+        textarea.placeholder = "Describe your automation idea here...";
+        body.appendChild(textarea);
+        note = textarea;
+      }
+    }
+
+    if (note) {
+      note.value = idea;
+    }
+
+    const toolset = card.dataset.toolset;
+    if (toolset) saveToolset(toolset);
+
+    toast("Automation idea saved");
+  }
+
+  document.addEventListener("contextmenu", (event) => {
+    const card = event.target.closest(".block-card");
+
+    if (card) {
+      openContextMenu(event, "block", card);
+      return;
+    }
+
+    const canvasArea = event.target.closest("#canvasWrap, #canvas, .block-board");
+
+    if (canvasArea) {
+      const clickedUi =
+        event.target.closest(".top-frame") ||
+        event.target.closest(".bottom-dock") ||
+        event.target.closest(".side-rail") ||
+        event.target.closest(".tool-card");
+
+      if (!clickedUi) {
+        openContextMenu(event, "canvas", null);
+      }
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    const actionBtn = event.target.closest(".block-menu-item");
+
+    if (!actionBtn) {
+      closeContextMenu();
+      return;
+    }
+
+    const action = actionBtn.dataset.action;
+
+    if (action === "rename") renameBlock(contextTarget);
+    if (action === "automation") editAutomationIdea(contextTarget);
+    if (action === "duplicate") duplicateBlock(contextTarget);
+    if (action === "front") bringToFront(contextTarget);
+
+    if (action === "delete" && contextTarget) {
+      const toolset = contextTarget.dataset.toolset;
+      contextTarget.remove();
+
+      if (toolset) saveToolset(toolset);
+
+      updateStatus();
+      toast("Block deleted");
+    }
+
+    if (action === "add-note") {
+      create({
+        type: "notes",
+        title: "New Note",
+        x: contextPoint.x,
+        y: contextPoint.y,
+        toolset: "manual",
+      });
+
+      saveToolset("manual");
+    }
+
+    if (action === "add-automation") {
+      create({
+        type: "automation",
+        title: "Automation Flow",
+        x: contextPoint.x,
+        y: contextPoint.y,
+        toolset: "manual",
+      });
+
+      saveToolset("manual");
+    }
+
+    if (action === "add-links") {
+      create({
+        type: "links",
+        title: "Tool Links",
+        x: contextPoint.x,
+        y: contextPoint.y,
+        toolset: "manual",
+      });
+
+      saveToolset("manual");
+    }
+
+    closeContextMenu();
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeContextMenu();
+    }
+  });
+
   window.BlockSystem = {
     create,
     toggleToolset,
@@ -502,5 +886,8 @@
     isToolsetOpen,
     clearAll,
     count,
+    duplicateBlock,
+    renameBlock,
+    bringToFront,
   };
 })();
