@@ -877,6 +877,108 @@
     }
   });
 
+/* =========================
+   TOOL DOCK QUICK BLOCK BUTTONS
+========================= */
+
+function createManualBlock(type) {
+  const wrap = getCanvasWrap();
+  const rect = wrap.getBoundingClientRect();
+
+  const scale = getScale();
+  const canvasX = getCanvasX();
+  const canvasY = getCanvasY();
+
+  const x = (rect.width / 2 - canvasX) / scale - 150 + Math.random() * 50;
+  const y = (rect.height / 2 - canvasY) / scale - 90 + Math.random() * 50;
+
+  const titleMap = {
+    notes: "New Note",
+    automation: "Automation Flow",
+    links: "Tool Links",
+  };
+
+  create({
+    type,
+    title: titleMap[type] || "New Block",
+    x,
+    y,
+    toolset: "manual",
+  });
+
+  saveToolset("manual");
+  toast(`${titleMap[type] || "Block"} created`);
+}
+
+function injectDockBlockButtons() {
+  const dock = document.querySelector(".bottom-dock");
+
+  if (!dock) return;
+
+  // Prevent duplicate buttons
+  if (dock.querySelector("[data-create-block]")) return;
+
+  const fitBtn = document.getElementById("dockFit");
+
+  const buttons = [
+    {
+      type: "notes",
+      icon: "📝",
+      label: "Note",
+    },
+    {
+      type: "automation",
+      icon: "⚙️",
+      label: "Auto",
+    },
+    {
+      type: "links",
+      icon: "🔗",
+      label: "Links",
+    },
+  ];
+
+  buttons.forEach((item) => {
+    const btn = document.createElement("button");
+
+    btn.className = "dock-btn";
+    btn.type = "button";
+    btn.dataset.createBlock = item.type;
+    btn.innerHTML = `<b>${item.icon}</b>${item.label}`;
+
+    if (fitBtn) {
+      dock.insertBefore(btn, fitBtn);
+    } else {
+      dock.appendChild(btn);
+    }
+  });
+}
+
+document.addEventListener("click", (event) => {
+  const btn = event.target.closest("[data-create-block]");
+
+  if (!btn) return;
+
+  createManualBlock(btn.dataset.createBlock);
+});
+
+injectDockBlockButtons();
+
+window.BlockSystem = {
+  create,
+  createManualBlock,
+  toggleToolset,
+  loadToolset,
+  removeToolset,
+  saveToolset,
+  isToolsetOpen,
+  clearAll,
+  count,
+  duplicateBlock,
+  renameBlock,
+  bringToFront,
+};
+})();
   window.BlockSystem = {
     create,
     toggleToolset,
