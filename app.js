@@ -649,6 +649,10 @@ function createSB(type, title, x = 120, y = 120, data = {}) {
   card.dataset.type = type;
   card.dataset.title = config.title;
 
+  if (data.toolset) {
+    card.dataset.toolset = data.toolset;
+  }
+
   card.style.left = (data.x ?? x) + "px";
   card.style.top = (data.y ?? y) + "px";
   card.style.width = (data.w ?? 300) + "px";
@@ -727,35 +731,35 @@ function getSBConfig(type, title) {
       icon: "💰",
       typeLabel: "Finance",
       color: "linear-gradient(135deg, var(--gold), #9b7929)",
-      title: title || "Finance — Apex",
+      title: title || "Finance",
       body: `
         <div class="sb-bar-block">
           <div class="sb-bar-top">
             <span>Revenue</span>
-            <b style="color:var(--green);">£24,800</b>
+            <b style="color:var(--green);">₹0</b>
           </div>
           <div class="sb-track">
-            <div class="sb-fill" style="width:78%;background:var(--green);"></div>
-          </div>
-        </div>
-
-        <div class="sb-bar-block">
-          <div class="sb-bar-top">
-            <span>Services</span>
-            <b style="color:var(--gold);">£19,300</b>
-          </div>
-          <div class="sb-track">
-            <div class="sb-fill" style="width:62%;background:var(--gold);"></div>
+            <div class="sb-fill" style="width:70%;background:var(--green);"></div>
           </div>
         </div>
 
         <div class="sb-bar-block">
           <div class="sb-bar-top">
             <span>Expenses</span>
-            <b style="color:var(--red);">£3,200</b>
+            <b style="color:var(--red);">₹0</b>
           </div>
           <div class="sb-track">
-            <div class="sb-fill" style="width:18%;background:var(--red);"></div>
+            <div class="sb-fill" style="width:25%;background:var(--red);"></div>
+          </div>
+        </div>
+
+        <div class="sb-bar-block">
+          <div class="sb-bar-top">
+            <span>Saved</span>
+            <b style="color:var(--gold);">₹0</b>
+          </div>
+          <div class="sb-track">
+            <div class="sb-fill" style="width:50%;background:var(--gold);"></div>
           </div>
         </div>
       `,
@@ -769,23 +773,18 @@ function getSBConfig(type, title) {
       body: `
         <div class="sb-row">
           <span class="sb-dot"></span>
-          <b>Apex Studio</b>
-          <span class="sb-right">£24.8k</span>
+          <b>Business 1</b>
+          <span class="sb-right">Active</span>
         </div>
         <div class="sb-row">
           <span class="sb-dot" style="background:var(--gold);"></span>
-          <b>NovaTech Ltd</b>
-          <span class="sb-right">£18.2k</span>
+          <b>Business 2</b>
+          <span class="sb-right">Plan</span>
         </div>
         <div class="sb-row">
           <span class="sb-dot" style="background:var(--blue);"></span>
-          <b>Koda Retail</b>
-          <span class="sb-right">£9.1k</span>
-        </div>
-        <div class="sb-row">
-          <span class="sb-dot" style="background:var(--green);"></span>
-          <b>Volta Media</b>
-          <span class="sb-right">£31.5k</span>
+          <b>Business 3</b>
+          <span class="sb-right">Ideas</span>
         </div>
       `,
     },
@@ -798,23 +797,18 @@ function getSBConfig(type, title) {
       body: `
         <div class="sb-row">
           <span class="sb-dot"></span>
-          <b>Morning run</b>
-          <span class="sb-right">🔥 7</span>
+          <b>Workout</b>
+          <span class="sb-right">Today</span>
         </div>
         <div class="sb-row">
           <span class="sb-dot" style="background:var(--gold);"></span>
-          <b>Read 30 mins</b>
-          <span class="sb-right">🔥 12</span>
+          <b>Journal</b>
+          <span class="sb-right">Night</span>
         </div>
         <div class="sb-row">
           <span class="sb-dot" style="background:var(--blue);"></span>
-          <b>Journal</b>
-          <span class="sb-right">3</span>
-        </div>
-        <div class="sb-row">
-          <span class="sb-dot" style="background:var(--muted2);"></span>
-          <b>Meditate</b>
-          <span class="sb-right">5</span>
+          <b>Study</b>
+          <span class="sb-right">45m</span>
         </div>
       `,
     },
@@ -1011,6 +1005,8 @@ function saveSBs() {
   const cards = [];
 
   document.querySelectorAll(".sb-card").forEach((card) => {
+    if (card.dataset.toolset === "video") return;
+
     const textarea = card.querySelector("textarea");
 
     cards.push({
@@ -1041,148 +1037,11 @@ function loadSBs() {
     saved = [];
   }
 
-  if (saved.length === 0) {
-    loadDefaultSBs();
-    return;
-  }
-
   saved.forEach((item) => {
     createSB(item.type, item.title, item.x, item.y, item);
   });
 
   updateStatus();
-}
-
-function loadDefaultSBs() {
-  createSB("stats", "Stats Overview", 60, 50);
-  createSB("finance", "Finance — Apex", 390, 40);
-  createSB("business", "Businesses", 720, 60);
-  createSB("habits", "Habits Today", 620, 330);
-  createSB("notes", "Notes", 80, 390);
-}
-
-/* =========================
-   VIDEO TOOL OVERLAY
-========================= */
-
-function openVideoTool() {
-  let overlay = document.getElementById("videoToolOverlay");
-
-  if (!overlay) {
-    overlay = document.createElement("section");
-    overlay.id = "videoToolOverlay";
-    overlay.className = "video-tool-overlay";
-
-    overlay.innerHTML = `
-      <header class="video-tool-top">
-        <div class="video-tool-title">
-          <h1>Video Tool</h1>
-          <p>Plan videos, track timestamps, and connect your creator tools</p>
-        </div>
-
-        <div class="video-tool-actions">
-          <button class="icon-btn" id="videoThemeBtn" title="Theme">☾</button>
-          <button class="video-close-btn" id="closeVideoToolBtn" title="Close">×</button>
-        </div>
-      </header>
-
-      <main class="video-tool-main">
-        <section class="video-tool-grid">
-          <article class="video-card large">
-            <div class="video-card-head">
-              <div class="video-card-icon">🎬</div>
-              <h3>Video Planner</h3>
-              <span>Core</span>
-            </div>
-            <div class="video-card-body">
-              <input class="video-input" placeholder="Video title idea..." />
-              <input class="video-input" placeholder="Paste YouTube link or reference..." />
-              <textarea class="video-textarea" placeholder="Video notes, hook, script idea, or plan..."></textarea>
-              <button class="video-main-btn">Save Video Plan</button>
-            </div>
-          </article>
-
-          <article class="video-card">
-            <div class="video-card-head">
-              <div class="video-card-icon">⏱</div>
-              <h3>Timestamps</h3>
-              <span>Notes</span>
-            </div>
-            <div class="video-card-body">
-              <input class="video-input" placeholder="Example: 04:32" />
-              <textarea class="video-textarea" placeholder="What happens at this time?"></textarea>
-              <button class="video-main-btn">Add Timestamp</button>
-            </div>
-          </article>
-
-          <article class="video-card">
-            <div class="video-card-head">
-              <div class="video-card-icon">🔗</div>
-              <h3>Integrations</h3>
-              <span>Tools</span>
-            </div>
-            <div class="video-card-body">
-              <button class="video-soft-btn" type="button" onclick="createSB('youtube', 'YouTube Studio', 120, 90)">Add YouTube SB</button>
-              <button class="video-soft-btn" type="button" onclick="createSB('chatgpt', 'ChatGPT Tool', 460, 90)">Add ChatGPT SB</button>
-              <a class="video-soft-btn" href="https://studio.youtube.com/" target="_blank" rel="noopener">Open YouTube Studio</a>
-              <a class="video-soft-btn" href="https://chatgpt.com/" target="_blank" rel="noopener">Open ChatGPT</a>
-            </div>
-          </article>
-
-          <article class="video-card">
-            <div class="video-card-head">
-              <div class="video-card-icon">🧠</div>
-              <h3>AI Help</h3>
-              <span>Prompt</span>
-            </div>
-            <div class="video-card-body">
-              <div class="video-row"><span class="video-dot"></span>Generate title ideas</div>
-              <div class="video-row"><span class="video-dot"></span>Rewrite hook</div>
-              <div class="video-row"><span class="video-dot"></span>Create description</div>
-              <div class="video-row"><span class="video-dot"></span>Make tags later</div>
-            </div>
-          </article>
-
-          <article class="video-card large">
-            <div class="video-card-head">
-              <div class="video-card-icon">📌</div>
-              <h3>Saved Video Board</h3>
-              <span>Coming next</span>
-            </div>
-            <div class="video-card-body">
-              <div class="video-row"><span class="video-dot"></span>No videos saved yet.</div>
-              <div class="video-row"><span class="video-dot"></span>Next we can make this save with localStorage.</div>
-              <div class="video-row"><span class="video-dot"></span>Later we can connect APIs or external tools.</div>
-            </div>
-          </article>
-        </section>
-      </main>
-    `;
-
-    document.body.appendChild(overlay);
-
-    const closeBtn = document.getElementById("closeVideoToolBtn");
-    const videoThemeBtn = document.getElementById("videoThemeBtn");
-
-    closeBtn.addEventListener("click", closeVideoTool);
-
-    videoThemeBtn.addEventListener("click", () => {
-      document.body.classList.toggle("light");
-      const isLight = document.body.classList.contains("light");
-      videoThemeBtn.textContent = isLight ? "☀" : "☾";
-      localStorage.setItem(THEME_KEY, isLight ? "light" : "dark");
-    });
-  }
-
-  overlay.classList.add("open");
-}
-
-function closeVideoTool() {
-  const overlay = document.getElementById("videoToolOverlay");
-
-  if (overlay) {
-    overlay.classList.remove("open");
-  }
 }
 
 /* =========================
@@ -1228,12 +1087,6 @@ document.addEventListener("keydown", (event) => {
   if (event.key.toLowerCase() === "l") toggleLock();
   if (event.key.toLowerCase() === "t") toggleTheme();
 });
-
-const openVideoToolBtn = document.getElementById("openVideoToolBtn");
-
-if (openVideoToolBtn) {
-  openVideoToolBtn.addEventListener("click", openVideoTool);
-}
 
 /* =========================
    START APP
