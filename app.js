@@ -626,3 +626,129 @@ loadTheme();
 loadTools();
 applyCanvasTransform();
 renderTools();
+function openVideoTool() {
+  let overlay = document.getElementById("videoToolOverlay");
+
+  if (!overlay) {
+    overlay = document.createElement("section");
+    overlay.id = "videoToolOverlay";
+    overlay.className = "video-tool-overlay";
+
+    overlay.innerHTML = `
+      <header class="video-tool-top">
+        <div class="video-tool-title">
+          <h1>Video Tool</h1>
+          <p>Plan videos, track timestamps, and connect your creator tools</p>
+        </div>
+
+        <div class="video-tool-actions">
+          <button class="icon-btn" id="videoThemeBtn" title="Theme">☾</button>
+          <button class="video-close-btn" id="closeVideoToolBtn" title="Close">×</button>
+        </div>
+      </header>
+
+      <main class="video-tool-main">
+        <section class="video-tool-grid">
+          <article class="video-card large">
+            <div class="video-card-head">
+              <div class="video-card-icon">🎬</div>
+              <h3>Video Planner</h3>
+              <span>Core</span>
+            </div>
+            <div class="video-card-body">
+              <input class="video-input" placeholder="Video title idea..." />
+              <input class="video-input" placeholder="Paste YouTube link or reference..." />
+              <textarea class="video-textarea" placeholder="Video notes, hook, script idea, or plan..."></textarea>
+              <button class="video-main-btn">Save Video Plan</button>
+            </div>
+          </article>
+
+          <article class="video-card">
+            <div class="video-card-head">
+              <div class="video-card-icon">⏱</div>
+              <h3>Timestamps</h3>
+              <span>Notes</span>
+            </div>
+            <div class="video-card-body">
+              <input class="video-input" placeholder="Example: 04:32" />
+              <textarea class="video-textarea" placeholder="What happens at this time?"></textarea>
+              <button class="video-main-btn">Add Timestamp</button>
+            </div>
+          </article>
+
+          <article class="video-card">
+            <div class="video-card-head">
+              <div class="video-card-icon">🔗</div>
+              <h3>Integrations</h3>
+              <span>Tools</span>
+            </div>
+            <div class="video-card-body">
+              <a class="video-soft-btn" href="https://studio.youtube.com/" target="_blank" rel="noopener">YouTube Studio</a>
+              <a class="video-soft-btn" href="https://www.youtube.com/" target="_blank" rel="noopener">YouTube</a>
+              <a class="video-soft-btn" href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT</a>
+              <button class="video-soft-btn" type="button">Editor Link Later</button>
+              <button class="video-soft-btn" type="button">Upload Tool Later</button>
+            </div>
+          </article>
+
+          <article class="video-card">
+            <div class="video-card-head">
+              <div class="video-card-icon">🧠</div>
+              <h3>AI Help</h3>
+              <span>Prompt</span>
+            </div>
+            <div class="video-card-body">
+              <div class="video-row"><span class="video-dot"></span>Generate title ideas</div>
+              <div class="video-row"><span class="video-dot"></span>Rewrite hook</div>
+              <div class="video-row"><span class="video-dot"></span>Create description</div>
+              <div class="video-row"><span class="video-dot"></span>Make tags later</div>
+            </div>
+          </article>
+
+          <article class="video-card large">
+            <div class="video-card-head">
+              <div class="video-card-icon">📌</div>
+              <h3>Saved Video Board</h3>
+              <span>Coming next</span>
+            </div>
+            <div class="video-card-body">
+              <div class="video-row"><span class="video-dot"></span>No videos saved yet.</div>
+              <div class="video-row"><span class="video-dot"></span>Next we can make this save with localStorage.</div>
+              <div class="video-row"><span class="video-dot"></span>Later we can connect APIs or external tools.</div>
+            </div>
+          </article>
+        </section>
+      </main>
+    `;
+
+    document.body.appendChild(overlay);
+
+    const closeBtn = document.getElementById("closeVideoToolBtn");
+    const videoThemeBtn = document.getElementById("videoThemeBtn");
+
+    closeBtn.addEventListener("click", closeVideoTool);
+
+    videoThemeBtn.addEventListener("click", () => {
+      document.body.classList.toggle("light");
+      const isLight = document.body.classList.contains("light");
+      videoThemeBtn.textContent = isLight ? "☀" : "☾";
+      localStorage.setItem("personalised_tools_theme_v1", isLight ? "light" : "dark");
+    });
+  }
+
+  overlay.classList.add("open");
+}
+
+function closeVideoTool() {
+  const overlay = document.getElementById("videoToolOverlay");
+
+  if (overlay) {
+    overlay.classList.remove("open");
+  }
+}
+
+const openVideoToolBtn = document.getElementById("openVideoToolBtn");
+
+if (openVideoToolBtn) {
+  openVideoToolBtn.addEventListener("click", openVideoTool);
+}
