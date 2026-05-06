@@ -6,13 +6,8 @@
 
   <title>Personalised Tools</title>
 
-  <!-- Main app design -->
   <link rel="stylesheet" href="style.css" />
-
-  <!-- Reusable block system -->
   <link rel="stylesheet" href="blocks/block.css" />
-
-  <!-- Video tool design -->
   <link rel="stylesheet" href="video-tool/style.css" />
 </head>
 
@@ -38,7 +33,7 @@
     </aside>
 
     <aside class="side-rail right-rail">
-      <button class="youtube-clock-icon" id="openVideoToolBtn" title="Open Video Tool">
+      <button class="youtube-clock-icon" id="openVideoToolBtn" title="Open Video Tool" type="button">
         <svg viewBox="0 0 90 64" aria-hidden="true">
           <rect class="yt-body" x="18" y="22" width="58" height="34" rx="13"></rect>
           <path class="yt-play" d="M42 31 L42 47 L56 39 Z"></path>
@@ -61,7 +56,7 @@
 
     <nav class="bottom-dock">
       <span class="dock-label">Tool dock</span>
-      <button class="dock-btn" id="dockFit"><b>⊡</b>Fit</button>
+      <button class="dock-btn" id="dockFit" type="button"><b>⊡</b>Fit</button>
     </nav>
 
     <div class="status">
@@ -73,13 +68,8 @@
     <div class="toast-wrap" id="toastWrap"></div>
   </div>
 
-  <!-- Main whiteboard logic -->
   <script src="app.js"></script>
-
-  <!-- Reusable block logic -->
   <script src="blocks/block.js"></script>
-
-  <!-- Video tool logic -->
   <script src="video-tool/app.js"></script>
 </body>
 </html>
