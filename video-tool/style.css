@@ -1,3 +1,8 @@
+/* =========================
+   VIDEO TOOL FOLDER CSS
+   Used by main page + standalone page
+========================= */
+
 .page-back-btn {
   text-decoration: none;
 }
@@ -22,4 +27,39 @@
 .blank-page-panel p {
   color: var(--muted);
   line-height: 1.6;
+}
+
+/* Active state when video SB toolset is open */
+
+body.video-tool-active .youtube-clock-icon {
+  border-color: rgba(216, 177, 76, 0.65);
+  background: rgba(216, 177, 76, 0.14);
+  box-shadow:
+    0 0 22px rgba(216, 177, 76, 0.2),
+    0 0 34px rgba(143, 109, 255, 0.16);
+}
+
+body.video-tool-active .youtube-clock-icon .clock-body {
+  stroke: rgba(255, 220, 115, 1);
+}
+
+.sb-card[data-toolset="video"] {
+  border-color: rgba(216, 177, 76, 0.28);
+}
+
+.sb-card[data-toolset="video"] .sb-head {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(216, 177, 76, 0.08),
+      rgba(143, 109, 255, 0.04)
+    );
+}
+
+.sb-card[data-toolset="video"]:hover {
+  border-color: rgba(216, 177, 76, 0.52);
+  box-shadow:
+    0 24px 55px rgba(0, 0, 0, 0.44),
+    0 0 28px rgba(216, 177, 76, 0.12),
+    0 0 28px rgba(143, 109, 255, 0.12);
 }
