@@ -1,4 +1,7 @@
-const VIDEO_TOOL_KEY = "personalised_video_tool_blocks_v1";
+/* =========================
+   VIDEO TOOL LOGIC
+   video-tool/app.js
+========================= */
 
 const videoToolBlocks = [
   {
@@ -6,122 +9,73 @@ const videoToolBlocks = [
     title: "YouTube Studio",
     x: 90,
     y: 70,
+    w: 310,
+    h: 190,
   },
   {
     type: "chatgpt",
     title: "ChatGPT Script Helper",
     x: 430,
     y: 70,
+    w: 320,
+    h: 210,
   },
   {
-    type: "notes",
+    type: "planner",
     title: "Video Planner",
     x: 770,
     y: 70,
+    w: 340,
+    h: 230,
   },
   {
-    type: "notes",
+    type: "timestamp",
     title: "Timestamp Notes",
     x: 160,
     y: 350,
+    w: 330,
+    h: 230,
   },
   {
-    type: "notes",
+    type: "checklist",
     title: "Upload Checklist",
-    x: 500,
+    x: 520,
     y: 350,
+    w: 320,
+    h: 210,
+  },
+  {
+    type: "links",
+    title: "Creator Tool Links",
+    x: 880,
+    y: 350,
+    w: 300,
+    h: 170,
   },
 ];
 
-let videoToolOpen = false;
-
-function getSavedVideoToolLayout() {
-  try {
-    return JSON.parse(localStorage.getItem(VIDEO_TOOL_KEY)) || {};
-  } catch {
-    return {};
-  }
-}
-
-function saveVideoToolLayout() {
-  const layout = {};
-
-  document.querySelectorAll('.sb-card[data-toolset="video"]').forEach((card) => {
-    const title = card.dataset.title;
-    const textarea = card.querySelector("textarea");
-
-    layout[title] = {
-      x: parseFloat(card.style.left) || 0,
-      y: parseFloat(card.style.top) || 0,
-      w: parseFloat(card.style.width) || 300,
-      h: parseFloat(card.style.minHeight) || 180,
-      z: parseInt(card.style.zIndex) || 1,
-      text: textarea ? textarea.value : "",
-    };
-  });
-
-  localStorage.setItem(VIDEO_TOOL_KEY, JSON.stringify(layout));
-}
-
-function openVideoToolBlocks() {
-  if (videoToolOpen) return;
-
-  if (typeof createSB !== "function") {
-    console.error("createSB() not found. Make sure video-tool/app.js loads after main app.js.");
+function toggleVideoTool() {
+  if (!window.BlockSystem) {
+    console.error("BlockSystem not found. Check script order: app.js, blocks/block.js, video-tool/app.js");
     return;
   }
 
-  const savedLayout = getSavedVideoToolLayout();
+  const isOpen = window.BlockSystem.toggleToolset("video", videoToolBlocks);
 
-  videoToolBlocks.forEach((block) => {
-    const saved = savedLayout[block.title] || {};
-
-    const card = createSB(block.type, block.title, saved.x ?? block.x, saved.y ?? block.y, {
-      ...saved,
-      title: block.title,
-      toolset: "video",
-    });
-
-    card.dataset.toolset = "video";
-
-    const textarea = card.querySelector("textarea");
-
-    if (textarea && saved.text) {
-      textarea.value = saved.text;
-    }
-
-    textarea?.addEventListener("input", saveVideoToolLayout);
-  });
-
-  videoToolOpen = true;
-  document.body.classList.add("video-tool-active");
+  document.body.classList.toggle("video-tool-active", isOpen);
 }
 
-function closeVideoToolBlocks() {
-  saveVideoToolLayout();
+function syncVideoToolActiveState() {
+  if (!window.BlockSystem) return;
 
-  document.querySelectorAll('.sb-card[data-toolset="video"]').forEach((card) => {
-    card.remove();
-  });
-
-  if (typeof updateStatus === "function") {
-    updateStatus();
-  }
-
-  videoToolOpen = false;
-  document.body.classList.remove("video-tool-active");
-}
-
-function toggleVideoToolBlocks() {
-  if (videoToolOpen) {
-    closeVideoToolBlocks();
-  } else {
-    openVideoToolBlocks();
-  }
+  const isOpen = window.BlockSystem.isToolsetOpen("video");
+  document.body.classList.toggle("video-tool-active", isOpen);
 }
 
 const openVideoToolBtn = document.getElementById("openVideoToolBtn");
 
 if (openVideoToolBtn) {
-  openVideoToolBtn.addEventListener("click", toggleVideoToolBlocks);
+  openVideoToolBtn.addEventListener("click", toggleVideoTool);
 }
+
+syncVideoToolActiveState();
