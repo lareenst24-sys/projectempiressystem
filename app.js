@@ -1,6 +1,5 @@
 const STORE_KEY = "personalised_tools_canvas_v2";
 const THEME_KEY = "personalised_tools_theme_v1";
-const SB_STORE_KEY = "personalised_tools_sb_blocks_v1";
 
 const canvasWrap = document.getElementById("canvasWrap");
 const canvas = document.getElementById("canvas");
@@ -48,7 +47,9 @@ let nextDragX = 0;
 let nextDragY = 0;
 
 /* =========================
-   OLD BASIC TOOL TEMPLATES
+   BASIC TOOL TEMPLATES
+   These can stay for now.
+   Blocks are handled separately in blocks/block.js
 ========================= */
 
 const templates = {
@@ -431,13 +432,12 @@ function startPan(event) {
   if (locked) return;
 
   const clickedTool = event.target.closest(".tool-card");
-  const clickedSB = event.target.closest(".sb-card");
+  const clickedBlock = event.target.closest(".block-card");
   const clickedTop = event.target.closest(".top-frame");
   const clickedDock = event.target.closest(".bottom-dock");
   const clickedRail = event.target.closest(".side-rail");
-  const clickedOverlay = event.target.closest(".video-tool-overlay");
 
-  if (clickedTool || clickedSB || clickedTop || clickedDock || clickedRail || clickedOverlay) return;
+  if (clickedTool || clickedBlock || clickedTop || clickedDock || clickedRail) return;
 
   isPanning = true;
   panStartX = event.clientX - canvasX;
@@ -524,8 +524,12 @@ function showSaved() {
 
 function updateStatus() {
   const normalTools = tools.length;
-  const sbTools = document.querySelectorAll(".sb-card").length;
-  const total = normalTools + sbTools;
+  const blockTools =
+    window.BlockSystem && typeof window.BlockSystem.count === "function"
+      ? window.BlockSystem.count()
+      : document.querySelectorAll(".block-card").length;
+
+  const total = normalTools + blockTools;
 
   if (countChip) {
     countChip.textContent = `${total} tool${total === 1 ? "" : "s"}`;
@@ -573,15 +577,18 @@ function toggleLock() {
   toast(locked ? "Canvas locked" : "Canvas unlocked");
 }
 
+function isCanvasLocked() {
+  return locked;
+}
+
 function clearAll() {
   if (!confirm("Clear all tools from this browser?")) return;
 
   tools = [];
   localStorage.removeItem(STORE_KEY);
-  localStorage.removeItem(SB_STORE_KEY);
 
-  if (sbBoard) {
-    sbBoard.innerHTML = "";
+  if (window.BlockSystem && typeof window.BlockSystem.clearAll === "function") {
+    window.BlockSystem.clearAll();
   }
 
   renderTools();
@@ -609,439 +616,6 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
-}
-
-/* =========================
-   SB = SMALL BLOCK SYSTEM
-   Drag + Resize + Save
-========================= */
-
-let sbBoard = null;
-let sbZ = 100;
-
-function ensureSBBoard() {
-  if (sbBoard) return sbBoard;
-
-  sbBoard = document.createElement("div");
-  sbBoard.className = "sb-board";
-  sbBoard.id = "sbBoard";
-
-  if (canvas) {
-    canvas.appendChild(sbBoard);
-  }
-
-  return sbBoard;
-}
-
-function createSB(type, title, x = 120, y = 120, data = {}) {
-  ensureSBBoard();
-
-  const config = getSBConfig(type, title);
-
-  const id =
-    data.id ||
-    (crypto.randomUUID ? crypto.randomUUID() : "sb-" + Date.now() + Math.random());
-
-  const card = document.createElement("section");
-
-  card.className = "sb-card";
-  card.dataset.id = id;
-  card.dataset.type = type;
-  card.dataset.title = config.title;
-
-  if (data.toolset) {
-    card.dataset.toolset = data.toolset;
-  }
-
-  card.style.left = (data.x ?? x) + "px";
-  card.style.top = (data.y ?? y) + "px";
-  card.style.width = (data.w ?? 300) + "px";
-  card.style.minHeight = (data.h ?? 180) + "px";
-  card.style.zIndex = data.z ?? ++sbZ;
-
-  card.innerHTML = `
-    <div class="sb-head">
-      <div class="sb-icon" style="background:${config.color};">${config.icon}</div>
-
-      <div class="sb-title-box">
-        <div class="sb-title">${escapeHtml(config.title)}</div>
-        <div class="sb-type">${escapeHtml(config.typeLabel)}</div>
-      </div>
-
-      <button class="sb-close" title="Remove">×</button>
-    </div>
-
-    <div class="sb-body">
-      ${config.body}
-    </div>
-
-    <div class="sb-resize"></div>
-  `;
-
-  bindSB(card);
-
-  sbBoard.appendChild(card);
-
-  const textarea = card.querySelector("textarea");
-
-  if (textarea && data.text) {
-    textarea.value = data.text;
-  }
-
-  saveSBs();
-  updateStatus();
-
-  return card;
-}
-
-function getSBConfig(type, title) {
-  const configs = {
-    stats: {
-      icon: "📊",
-      typeLabel: "Stats",
-      color: "linear-gradient(135deg, var(--purple), #5b38c6)",
-      title: title || "Stats Overview",
-      body: `
-        <div class="sb-stat-grid">
-          <div class="sb-stat">
-            <b style="color:var(--gold);">83.6k</b>
-            <span>Total revenue</span>
-            <small>↑ +18%</small>
-          </div>
-          <div class="sb-stat">
-            <b style="color:var(--blue);">47</b>
-            <span>Open tasks</span>
-            <small style="color:var(--red);">8 late</small>
-          </div>
-          <div class="sb-stat">
-            <b style="color:var(--purple2);">4</b>
-            <span>Businesses</span>
-            <small style="color:var(--muted);">active</small>
-          </div>
-          <div class="sb-stat">
-            <b>12</b>
-            <span>Projects</span>
-            <small>6 on track</small>
-          </div>
-        </div>
-      `,
-    },
-
-    finance: {
-      icon: "💰",
-      typeLabel: "Finance",
-      color: "linear-gradient(135deg, var(--gold), #9b7929)",
-      title: title || "Finance",
-      body: `
-        <div class="sb-bar-block">
-          <div class="sb-bar-top">
-            <span>Revenue</span>
-            <b style="color:var(--green);">₹0</b>
-          </div>
-          <div class="sb-track">
-            <div class="sb-fill" style="width:70%;background:var(--green);"></div>
-          </div>
-        </div>
-
-        <div class="sb-bar-block">
-          <div class="sb-bar-top">
-            <span>Expenses</span>
-            <b style="color:var(--red);">₹0</b>
-          </div>
-          <div class="sb-track">
-            <div class="sb-fill" style="width:25%;background:var(--red);"></div>
-          </div>
-        </div>
-
-        <div class="sb-bar-block">
-          <div class="sb-bar-top">
-            <span>Saved</span>
-            <b style="color:var(--gold);">₹0</b>
-          </div>
-          <div class="sb-track">
-            <div class="sb-fill" style="width:50%;background:var(--gold);"></div>
-          </div>
-        </div>
-      `,
-    },
-
-    business: {
-      icon: "🏢",
-      typeLabel: "Business",
-      color: "linear-gradient(135deg, var(--blue), #315ed0)",
-      title: title || "Businesses",
-      body: `
-        <div class="sb-row">
-          <span class="sb-dot"></span>
-          <b>Business 1</b>
-          <span class="sb-right">Active</span>
-        </div>
-        <div class="sb-row">
-          <span class="sb-dot" style="background:var(--gold);"></span>
-          <b>Business 2</b>
-          <span class="sb-right">Plan</span>
-        </div>
-        <div class="sb-row">
-          <span class="sb-dot" style="background:var(--blue);"></span>
-          <b>Business 3</b>
-          <span class="sb-right">Ideas</span>
-        </div>
-      `,
-    },
-
-    habits: {
-      icon: "⚡",
-      typeLabel: "Habits",
-      color: "linear-gradient(135deg, var(--purple2), #6a45d8)",
-      title: title || "Habits Today",
-      body: `
-        <div class="sb-row">
-          <span class="sb-dot"></span>
-          <b>Workout</b>
-          <span class="sb-right">Today</span>
-        </div>
-        <div class="sb-row">
-          <span class="sb-dot" style="background:var(--gold);"></span>
-          <b>Journal</b>
-          <span class="sb-right">Night</span>
-        </div>
-        <div class="sb-row">
-          <span class="sb-dot" style="background:var(--blue);"></span>
-          <b>Study</b>
-          <span class="sb-right">45m</span>
-        </div>
-      `,
-    },
-
-    notes: {
-      icon: "📝",
-      typeLabel: "Notes",
-      color: "linear-gradient(135deg, var(--purple), #5b38c6)",
-      title: title || "Notes",
-      body: `
-        <textarea class="sb-note" placeholder="Write anything..."></textarea>
-      `,
-    },
-
-    chatgpt: {
-      icon: "🤖",
-      typeLabel: "AI Tool",
-      color: "linear-gradient(135deg, var(--green), #167c45)",
-      title: title || "ChatGPT Tool",
-      body: `
-        <div class="sb-row">
-          <span class="sb-dot" style="background:var(--green);"></span>
-          <b>Prompt builder</b>
-          <span class="sb-right">Later</span>
-        </div>
-        <div class="sb-row">
-          <span class="sb-dot" style="background:var(--purple);"></span>
-          <b>Script helper</b>
-          <span class="sb-right">Later</span>
-        </div>
-        <div class="sb-row">
-          <span class="sb-dot" style="background:var(--gold);"></span>
-          <b>Idea generator</b>
-          <span class="sb-right">Later</span>
-        </div>
-      `,
-    },
-
-    youtube: {
-      icon: "▶",
-      typeLabel: "YouTube",
-      color: "linear-gradient(135deg, #ff3545, #8e1b25)",
-      title: title || "YouTube Studio",
-      body: `
-        <div class="sb-row">
-          <span class="sb-dot" style="background:#ff3545;"></span>
-          <b>Studio dashboard</b>
-          <span class="sb-right">Link</span>
-        </div>
-        <div class="sb-row">
-          <span class="sb-dot" style="background:var(--gold);"></span>
-          <b>Upload planner</b>
-          <span class="sb-right">Later</span>
-        </div>
-        <div class="sb-row">
-          <span class="sb-dot" style="background:var(--blue);"></span>
-          <b>Editor notes</b>
-          <span class="sb-right">Later</span>
-        </div>
-      `,
-    },
-  };
-
-  return configs[type] || configs.notes;
-}
-
-function bindSB(card) {
-  const head = card.querySelector(".sb-head");
-  const closeBtn = card.querySelector(".sb-close");
-  const resizeHandle = card.querySelector(".sb-resize");
-
-  head.addEventListener("mousedown", (event) => startSBDrag(event, card));
-  head.addEventListener("touchstart", (event) => startSBTouchDrag(event, card), {
-    passive: false,
-  });
-
-  closeBtn.addEventListener("click", () => {
-    card.remove();
-    saveSBs();
-    updateStatus();
-  });
-
-  resizeHandle.addEventListener("mousedown", (event) => startSBResize(event, card));
-
-  card.querySelectorAll("textarea").forEach((textarea) => {
-    textarea.addEventListener("input", saveSBs);
-  });
-}
-
-function startSBDrag(event, card) {
-  if (locked) return;
-
-  event.stopPropagation();
-
-  card.classList.add("dragging");
-  card.style.zIndex = ++sbZ;
-
-  const rect = card.getBoundingClientRect();
-  const boardRect = sbBoard.getBoundingClientRect();
-
-  const offsetX = event.clientX - rect.left;
-  const offsetY = event.clientY - rect.top;
-
-  function move(e) {
-    const x = e.clientX - boardRect.left - offsetX;
-    const y = e.clientY - boardRect.top - offsetY;
-
-    card.style.left = x + "px";
-    card.style.top = y + "px";
-  }
-
-  function up() {
-    card.classList.remove("dragging");
-
-    saveSBs();
-
-    document.removeEventListener("mousemove", move);
-    document.removeEventListener("mouseup", up);
-  }
-
-  document.addEventListener("mousemove", move);
-  document.addEventListener("mouseup", up);
-}
-
-function startSBTouchDrag(event, card) {
-  if (locked) return;
-
-  event.preventDefault();
-  event.stopPropagation();
-
-  card.classList.add("dragging");
-  card.style.zIndex = ++sbZ;
-
-  const touch = event.touches[0];
-  const rect = card.getBoundingClientRect();
-  const boardRect = sbBoard.getBoundingClientRect();
-
-  const offsetX = touch.clientX - rect.left;
-  const offsetY = touch.clientY - rect.top;
-
-  function move(e) {
-    const t = e.touches[0];
-
-    const x = t.clientX - boardRect.left - offsetX;
-    const y = t.clientY - boardRect.top - offsetY;
-
-    card.style.left = x + "px";
-    card.style.top = y + "px";
-  }
-
-  function up() {
-    card.classList.remove("dragging");
-
-    saveSBs();
-
-    document.removeEventListener("touchmove", move);
-    document.removeEventListener("touchend", up);
-  }
-
-  document.addEventListener("touchmove", move, { passive: false });
-  document.addEventListener("touchend", up);
-}
-
-function startSBResize(event, card) {
-  if (locked) return;
-
-  event.stopPropagation();
-
-  const startX = event.clientX;
-  const startY = event.clientY;
-  const startW = card.offsetWidth;
-  const startH = card.offsetHeight;
-
-  function move(e) {
-    const nextW = Math.max(220, startW + e.clientX - startX);
-    const nextH = Math.max(150, startH + e.clientY - startY);
-
-    card.style.width = nextW + "px";
-    card.style.minHeight = nextH + "px";
-  }
-
-  function up() {
-    saveSBs();
-
-    document.removeEventListener("mousemove", move);
-    document.removeEventListener("mouseup", up);
-  }
-
-  document.addEventListener("mousemove", move);
-  document.addEventListener("mouseup", up);
-}
-
-function saveSBs() {
-  const cards = [];
-
-  document.querySelectorAll(".sb-card").forEach((card) => {
-    if (card.dataset.toolset === "video") return;
-
-    const textarea = card.querySelector("textarea");
-
-    cards.push({
-      id: card.dataset.id,
-      type: card.dataset.type,
-      title: card.dataset.title,
-      x: parseFloat(card.style.left) || 0,
-      y: parseFloat(card.style.top) || 0,
-      w: parseFloat(card.style.width) || 300,
-      h: parseFloat(card.style.minHeight) || 180,
-      z: parseInt(card.style.zIndex) || 1,
-      text: textarea ? textarea.value : "",
-    });
-  });
-
-  localStorage.setItem(SB_STORE_KEY, JSON.stringify(cards));
-  updateStatus();
-}
-
-function loadSBs() {
-  ensureSBBoard();
-
-  let saved = [];
-
-  try {
-    saved = JSON.parse(localStorage.getItem(SB_STORE_KEY)) || [];
-  } catch {
-    saved = [];
-  }
-
-  saved.forEach((item) => {
-    createSB(item.type, item.title, item.x, item.y, item);
-  });
-
-  updateStatus();
 }
 
 /* =========================
@@ -1089,6 +663,27 @@ document.addEventListener("keydown", (event) => {
 });
 
 /* =========================
+   EXPOSE MAIN APP FOR BLOCK SYSTEM
+========================= */
+
+window.MainApp = {
+  canvas,
+  canvasWrap,
+  get scale() {
+    return scale;
+  },
+  get canvasX() {
+    return canvasX;
+  },
+  get canvasY() {
+    return canvasY;
+  },
+  isLocked: isCanvasLocked,
+  toast,
+  updateStatus,
+};
+
+/* =========================
    START APP
 ========================= */
 
@@ -1096,4 +691,3 @@ loadTheme();
 loadTools();
 applyCanvasTransform();
 renderTools();
-loadSBs();
