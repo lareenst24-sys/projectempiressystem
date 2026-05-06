@@ -1,8 +1,9 @@
 /* =========================
-   VIDEO TOOL FOLDER CSS
-   Used by main page + standalone page
+   VIDEO TOOL STYLES
+   video-tool/style.css
 ========================= */
 
+/* Standalone video-tool page */
 .page-back-btn {
   text-decoration: none;
 }
@@ -29,8 +30,7 @@
   line-height: 1.6;
 }
 
-/* Active state when video SB toolset is open */
-
+/* Main-page active state when Video Tool blocks are open */
 body.video-tool-active .youtube-clock-icon {
   border-color: rgba(216, 177, 76, 0.65);
   background: rgba(216, 177, 76, 0.14);
@@ -43,11 +43,16 @@ body.video-tool-active .youtube-clock-icon .clock-body {
   stroke: rgba(255, 220, 115, 1);
 }
 
-.sb-card[data-toolset="video"] {
+body.video-tool-active .youtube-clock-icon .clock-hand {
+  stroke: rgba(255, 220, 115, 1);
+}
+
+/* Video tool block styling */
+.block-card[data-toolset="video"] {
   border-color: rgba(216, 177, 76, 0.28);
 }
 
-.sb-card[data-toolset="video"] .sb-head {
+.block-card[data-toolset="video"] .block-head {
   background:
     linear-gradient(
       90deg,
@@ -56,7 +61,7 @@ body.video-tool-active .youtube-clock-icon .clock-body {
     );
 }
 
-.sb-card[data-toolset="video"]:hover {
+.block-card[data-toolset="video"]:hover {
   border-color: rgba(216, 177, 76, 0.52);
   box-shadow:
     0 24px 55px rgba(0, 0, 0, 0.44),
